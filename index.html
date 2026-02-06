@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <title>Kartu Donor Digital - UDD PMI</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Roboto:wght@400;700&family=Courier+Prime:wght@700&display=swap" rel="stylesheet">
+  
+  <style>
+    body { background: #f0f2f5; font-family: 'Roboto', sans-serif; text-align: center; padding: 20px; }
+    .card-container { max-width: 450px; margin: 0 auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    canvas { width: 100%; height: auto; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); margin-bottom: 20px; }
+    .btn-download { width: 100%; padding: 15px; font-weight: bold; font-size: 18px; border-radius: 50px; text-decoration: none; display: block; }
+    .loading-text { font-size: 14px; color: #666; margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+  <div class="card-container">
+    <h4 class="mb-3 fw-bold text-danger">Kartu Donor Digital</h4>
+    
+    <div id="canvasArea">
+      <canvas id="myCanvas"></canvas>
+      <div id="loadingInfo" class="loading-text">Sedang memproses kartu...</div>
+    </div>
+
+    <a id="btnLink" href="#" download="Kartu_Donor.png" class="btn btn-danger btn-download mt-3 disabled">
+      Menyiapkan...
+    </a>
+    
+    <div class="mt-3 text-muted small">UDD PMI Prov. Maluku Utara</div>
+  </div>
+
+  <div id="qrcode" style="display:none;"></div>
+
+  <script>
+    // --- KONFIGURASI NAMA FILE GAMBAR DI GITHUB ---
+    const bgFilename = 'template.png'; // Pastikan nama file sama persis dengan yang diupload
+
+    // 1. Ambil Data dari URL Parameter (?d=...)
+    const params = new URLSearchParams(window.location.search);
+    const rawData = params.get('d');
+
+    if (!rawData) {
+      alert("Link tidak valid (Data kosong).");
+      document.getElementById('loadingInfo').innerText = "Error: Data tidak ditemukan.";
+    } else {
+      // Decode Data
+      try {
+        // Ganti spasi jadi + jika ada masalah URL encoding
+        const cleanData = rawData.replace(/ /g, '+');
+        const decoded = atob(cleanData);
+        const info = JSON.parse(decoded);
+        
+        // Mulai Generate
+        document.fonts.ready.then(function () {
+          generateCard(info);
+        });
+      } catch (e) {
+        alert("Gagal membaca data kartu.");
+        console.error(e);
+      }
+    }
+
+    function generateCard(info) {
+      const canvas = document.getElementById('myCanvas');
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      
+      // Load Gambar dari Folder yang sama di GitHub
+      img.src = bgFilename; 
+      img.crossOrigin = "Anonymous";
+
+      img.onload = function() {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        
+        ctx.drawImage(img, 0, 0);
+        ctx.textAlign = "center";
+        
+        // --- POSISI TEKS (Sesuai settingan terakhir) ---
+        
+        // Header
+        ctx.font = "bold 40px 'Oswald', sans-serif";
+        ctx.fillStyle = "#d32f2f";
+        ctx.fillText("KARTU PENDONOR", canvas.width/2, 280);
+
+        ctx.font = "bold 22px 'Roboto', sans-serif";
+        ctx.fillStyle = "#444";
+        ctx.fillText("UDD PMI PROVINSI MALUKU UTARA", canvas.width/2, 330);
+
+        // Nama
+        ctx.font = "bold 50px 'Roboto', sans-serif"; 
+        ctx.fillStyle = "#000";
+        ctx.fillText(info.nm.toUpperCase(), canvas.width/2, 430);
+
+        // Golongan Darah
+        ctx.font = "18px 'Roboto', sans-serif";
+        ctx.fillStyle = "#888";
+        ctx.fillText("GOLONGAN DARAH", canvas.width/2, 540);
+
+        ctx.font = "bold 120px 'Oswald', sans-serif";
+        ctx.fillStyle = "#d32f2f";
+        ctx.fillText(info.gl, canvas.width/2, 650);
+
+        // QR Code
+        const qrDiv = document.getElementById("qrcode");
+        new QRCode(qrDiv, {
+          text: info.id,
+          width: 250,
+          height: 250,
+          correctLevel : QRCode.CorrectLevel.H
+        });
+        
+        setTimeout(() => {
+          const qrImg = qrDiv.querySelector("img");
+          if(qrImg) {
+            let qrX = (canvas.width - 250) / 2;
+            ctx.drawImage(qrImg, qrX, 730, 250, 250);
+          }
+          
+          // ID Pendonor
+          ctx.font = "bold 30px 'Courier Prime', monospace";
+          ctx.fillStyle = "#333";
+          ctx.fillText("ID: " + info.id, canvas.width/2, 1030);
+
+          // Footer Quote
+          ctx.font = "italic 20px 'Roboto', sans-serif";
+          ctx.fillStyle = "#666";
+          ctx.fillText('"Setetes darah Anda, nyawa bagi sesama."', canvas.width/2, 1100);
+
+          // Selesai
+          document.getElementById('loadingInfo').style.display = 'none';
+          const dataURL = canvas.toDataURL("image/png");
+          const btn = document.getElementById('btnLink');
+          btn.href = dataURL;
+          btn.download = "Kartu_Donor_" + info.nm.replace(/ /g, "_") + ".png";
+          btn.innerHTML = '<i class="fa-solid fa-download"></i> Simpan Kartu';
+          btn.classList.remove('disabled');
+          
+        }, 500);
+      };
+
+      img.onerror = function() {
+        alert("Gagal memuat gambar 'template.png'. Pastikan file ada di GitHub.");
+      };
+    }
+  </script>
+</body>
+</html>
