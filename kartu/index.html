@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kartu Donor Digital - PMI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        
+        .card-container {
+            width: 100%; max-width: 400px; border-radius: 28px; position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .geometric-bg {
+            position: absolute; inset: 0; opacity: 0.15; z-index: 0; mix-blend-mode: overlay;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='2'%3E%3Cpath d='M769 229L1037 250.9M927.1 49.1L1051.6 258.1M658.3 225.9L531.8 47.4M121.8 136.4L267.5 130.8M228.1 226.5L395.8 74.2M229 284.8L432.7 573.5M266.7 397.4L330.8 549.6M586.4 306.2L819.7 296M611 352.6L940.6 542.7M713 519.2L1122.9 286.2M900 435L922 662M1066.5 491L1142.2 436'/%3E%3Cpath d='M836 498.8L936.5 658M835.4 611L671 661M632 755.8L799.7 503.5M386 630.8L597.5 765.3M428.8 698.5L347.5 831.3'/%3E%3C/g%3E%3C/svg%3E");
+            background-size: cover; background-position: center;
+        }
+
+        .content-layer { position: relative; z-index: 10; padding: 20px; }
+        .inner-box { background: rgba(255, 255, 255, 0.95); border-radius: 18px; padding: 16px; margin-bottom: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); }
+        .info-table { width: 100%; font-size: 13px; color: #334155; border-collapse: separate; border-spacing: 0 6px; }
+        .info-table td.label { width: 30%; color: #64748b; font-weight: 600; vertical-align: top; }
+        .info-table td.value { width: 65%; font-weight: 700; color: #0f172a; word-break: break-word; }
+        .info-table td.colon { width: 5%; font-weight: 600; color: #64748b; vertical-align: top; }
+        
+        #loading { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px; }
+        .spinner { border: 4px solid rgba(0,0,0,0.1); width: 40px; height: 40px; border-radius: 50%; border-left-color: #ef4444; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div id="loading">
+        <div class="spinner"></div>
+        <p class="mt-4 text-slate-500 font-semibold animate-pulse">Menyiapkan Kartu Digital...</p>
+    </div>
+
+    <div id="card-area" class="card-container hidden" style="border-bottom-width: 14px; border-bottom-style: solid;">
+        <div class="geometric-bg"></div>
+        <div class="content-layer">
+            
+            <div class="inner-box flex justify-between items-center">
+                <img src="https://i.imgur.com/dv9d5nW.png" alt="PMI Logo" class="h-12 object-contain">
+                <div class="text-right leading-tight">
+                    <h2 class="font-bold text-slate-800 text-[14px] tracking-wider">KARTU PENDONOR</h2>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase">Provinsi Maluku Utara</p>
+                </div>
+            </div>
+
+            <div class="inner-box flex items-center justify-between p-5">
+                <div class="bg-white p-1.5 rounded-xl border border-slate-200 shadow-sm">
+                    <img id="qr-img" src="" alt="QR" class="w-20 h-20" crossorigin="anonymous">
+                </div>
+                <div class="text-center ml-4 flex-1">
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Gol. Darah</p>
+                    <h1 class="text-5xl font-extrabold drop-shadow-sm" id="gol-text">
+                        <span id="gol-main"></span><span id="gol-rh" class="text-3xl ml-1"></span>
+                    </h1>
+                </div>
+            </div>
+
+            <div class="px-3 py-2 mb-2">
+                <table class="info-table text-white">
+                    <tr><td class="label text-white/80">No. KTP</td><td class="colon text-white/80">:</td><td id="val-ktp" class="value text-white"></td></tr>
+                    <tr><td class="label text-white/80">Nama</td><td class="colon text-white/80">:</td><td id="val-nama" class="value text-white"></td></tr>
+                    <tr><td class="label text-white/80">TTL</td><td class="colon text-white/80">:</td><td id="val-ttl" class="value text-white"></td></tr>
+                    <tr><td class="label text-white/80">Alamat</td><td class="colon text-white/80">:</td><td id="val-alamat" class="value text-white leading-snug"></td></tr>
+                    <tr><td class="label text-white/80">Wilayah</td><td class="colon text-white/80">:</td><td id="val-wilayah" class="value text-white"></td></tr>
+                </table>
+            </div>
+
+            <div class="inner-box flex flex-col items-center justify-center py-4 mt-3">
+                <img id="barcode-img" src="" alt="Barcode" class="h-12 w-[90%] object-fill opacity-90 mix-blend-multiply mb-1" crossorigin="anonymous">
+                <p id="val-kode" class="text-[14px] font-bold text-slate-600 tracking-[0.3em] font-mono"></p>
+            </div>
+        </div>
+    </div>
+
+    <button id="btn-download" onclick="downloadCard()" class="hidden mt-6 bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+        Simpan ke Galeri (JPG)
+    </button>
+
+    <script>
+        // MASUKKAN URL DEPLOYMENT GOOGLE APPS SCRIPT ANDA DI SINI
+        const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbw9ejXlcM_O-AYLO6DDTW5J4pbQjKMU3xdPJeGWJqDyFWJ_S087JCYe2Mn-1DjPfobW1Q/exec";
+
+        // Konfigurasi Warna Golongan Darah
+        const colors = {
+            'A':  { bg: 'from-red-600 to-red-800', border: '#7f1d1d', text: 'text-red-700' },
+            'B':  { bg: 'from-purple-500 to-purple-800', border: '#4c1d95', text: 'text-purple-700' },
+            'O':  { bg: 'from-sky-400 to-blue-700', border: '#1e3a8a', text: 'text-blue-700' },
+            'AB': { bg: 'from-amber-300 to-orange-500', border: '#9a3412', text: 'text-orange-700' },
+            '-':  { bg: 'from-slate-400 to-slate-600', border: '#334155', text: 'text-slate-700' }
+        };
+
+        // Ambil ID dari URL (Misal: ?id=MTAwMDE=)
+        const urlParams = new URLSearchParams(window.location.search);
+        const donorId = urlParams.get('id');
+
+        if (donorId) {
+            fetch(`${GAS_WEBAPP_URL}?action=get_kartu&id=${donorId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if(data.status === "ok") {
+                        // Terapkan Warna
+                        let golRaw = (data.gol || '-').toUpperCase();
+                        let theme = colors[golRaw] || colors['-'];
+                        
+                        let card = document.getElementById('card-area');
+                        card.classList.add('bg-gradient-to-br', ...theme.bg.split(' '));
+                        card.style.borderColor = theme.border;
+                        document.getElementById('gol-text').classList.add(theme.text);
+
+                        // Masukkan Data
+                        document.getElementById('gol-main').innerText = data.gol;
+                        document.getElementById('gol-rh').innerText = data.rh;
+                        document.getElementById('val-ktp').innerText = data.ktp;
+                        document.getElementById('val-nama').innerText = data.nama;
+                        document.getElementById('val-ttl').innerText = data.ttl;
+                        document.getElementById('val-alamat').innerText = data.alamat;
+                        document.getElementById('val-wilayah').innerText = data.wilayah;
+                        document.getElementById('val-kode').innerText = data.kode;
+
+                        // Gambar QR & Barcode (Gunakan corsproxy agar bisa di-download via html2canvas)
+                        let rawQr = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(data.kode)}`;
+                        let rawBar = `https://bwipjs-api.metafloor.com/?bcid=code128&text=${encodeURIComponent(data.kode)}&scale=3&height=10&includetext=false`;
+                        
+                        document.getElementById('qr-img').src = `https://corsproxy.io/?${encodeURIComponent(rawQr)}`;
+                        document.getElementById('barcode-img').src = `https://corsproxy.io/?${encodeURIComponent(rawBar)}`;
+
+                        // Tampilkan Kartu
+                        document.getElementById('loading').style.display = 'none';
+                        card.classList.remove('hidden');
+                        document.getElementById('btn-download').classList.remove('hidden');
+                        document.getElementById('btn-download').classList.add('flex');
+                    } else {
+                        document.getElementById('loading').innerHTML = `<p class='text-red-500 font-bold text-center mt-5 text-xl'>⚠️ ${data.pesan}</p>`;
+                    }
+                })
+                .catch(err => {
+                    document.getElementById('loading').innerHTML = `<p class='text-red-500 font-bold'>Gagal terhubung ke server PMI.</p>`;
+                });
+        } else {
+            document.getElementById('loading').innerHTML = `<p class='text-slate-500 font-bold'>Tidak ada data pendonor yang dicari.</p>`;
+        }
+
+        // Fungsi Download JPG
+        function downloadCard() {
+            const card = document.getElementById('card-area');
+            const btn = document.getElementById('btn-download');
+            
+            btn.innerHTML = `<div class="spinner border-t-white w-5 h-5"></div> Memproses...`;
+            
+            html2canvas(card, { scale: 3, useCORS: true, allowTaint: false }).then(canvas => {
+                let link = document.createElement('a');
+                link.download = `Kartu_Donor_${document.getElementById('val-nama').innerText.replace(/\s+/g, '_')}.jpg`;
+                link.href = canvas.toDataURL("image/jpeg", 0.95);
+                link.click();
+                btn.innerHTML = `✅ Berhasil Disimpan!`;
+                setTimeout(() => { btn.innerHTML = `Simpan ke Galeri (JPG)`; }, 3000);
+            });
+        }
+    </script>
+</body>
+</html>
