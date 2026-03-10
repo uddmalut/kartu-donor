@@ -146,7 +146,8 @@
                     }
                 })
                 .catch(err => {
-                    document.getElementById('loading').innerHTML = `<p class='text-red-500 font-bold'>Gagal terhubung ke server PMI.</p>`;
+                    document.getElementById('loading').innerHTML = `<p class='text-red-500 font-bold'>Gagal terhubung! Detail Error: ${err.message}</p>`;
+                    console.log(err);
                 });
         } else {
             document.getElementById('loading').innerHTML = `<p class='text-slate-500 font-bold'>Tidak ada data pendonor yang dicari.</p>`;
