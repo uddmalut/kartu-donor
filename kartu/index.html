@@ -38,7 +38,7 @@
 
     <div id="loading">
         <div class="spinner"></div>
-        <p class="mt-4 text-slate-500 font-semibold animate-pulse">Menarik Data Pendonor...</p>
+        <p class="mt-4 text-slate-500 font-semibold animate-pulse">Menyiapkan Kartu Digital...</p>
     </div>
 
     <div id="card-area" class="card-container hidden">
@@ -50,7 +50,7 @@
                 
                 <div class="text-right leading-tight">
                     <h2 class="font-bold text-slate-800 text-[14px] tracking-wider">KARTU PENDONOR</h2>
-                    <p class="text-[10px] text-slate-500 font-bold uppercase">UDD PMI Prov. Maluku Utara</p>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase">PMI Provinsi Maluku Utara</p>
                 </div>
             </div>
 
@@ -92,19 +92,29 @@
         // MASUKKAN URL DEPLOYMENT GOOGLE APPS SCRIPT ANDA DI SINI!
         const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbw9ejXlcM_O-AYLO6DDTW5J4pbQjKMU3xdPJeGWJqDyFWJ_S087JCYe2Mn-1DjPfobW1Q/exec";
 
-        // MENGAKALI SAFARI IPHONE: 
-        // Mengubah logo Imgur menjadi file lokal otomatis lewat proxy saat halaman loading
-        fetch('https://wsrv.nl/?url=i.imgur.com/n7ftJCZ.png')
-            .then(response => response.blob())
-            .then(blob => {
-                const reader = new FileReader();
-                reader.onloadend = function() {
-                    document.getElementById('logo-pmi').src = reader.result;
-                }
-                reader.readAsDataURL(blob);
-            });
+        // =========================================================================
+        // SCRIPT AJAIB ANTI-BLANK IPHONE: Ubah Logo Imgur jadi Canvas Lokal
+        // =========================================================================
+        function muatLogoPMI() {
+            const img = new Image();
+            img.crossOrigin = "Anonymous"; // Meminta izin ke Imgur
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width; canvas.height = img.height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0);
+                document.getElementById('logo-pmi').src = canvas.toDataURL('image/png'); // Render jadi Base64
+            };
+            img.onerror = function() {
+                // Jika error, paksa pakai link asli
+                document.getElementById('logo-pmi').src = "https://i.imgur.com/n7ftJCZ.png";
+            };
+            // "?nocache" untuk mengecoh Safari agar tidak mengambil gambar rusak dari riwayat memori (cache)
+            img.src = "https://i.imgur.com/n7ftJCZ.png?nocache=" + new Date().getTime();
+        }
+        muatLogoPMI();
+        // =========================================================================
 
-        // Pengaturan Warna Sesuai Request
         const colors = {
             'A':  { bg: 'from-yellow-300 to-amber-500', border: '#d97706', bloodTxt: 'text-amber-900', bodyTxt: 'text-slate-900', labelTxt: 'text-slate-700' }, 
             'B':  { bg: 'from-pink-400 to-rose-500', border: '#be185d', bloodTxt: 'text-white', bodyTxt: 'text-white', labelTxt: 'text-pink-100' }, 
@@ -175,7 +185,8 @@
             
             btn.innerHTML = `<div class="spinner border-t-white w-5 h-5"></div> Memproses...`;
             
-            html2canvas(card, { scale: 3, backgroundColor: null, useCORS: true }).then(canvas => {
+            // Tambahkan useCORS: true untuk keamanan ganda
+            html2canvas(card, { scale: 3, backgroundColor: null, useCORS: true, allowTaint: false }).then(canvas => {
                 canvas.toBlob(function(blob) {
                     const namaFile = `Kartu_Donor_PMI_${document.getElementById('val-nama').innerText.replace(/\s+/g, '_')}.jpg`;
                     const file = new File([blob], namaFile, { type: 'image/jpeg' });
