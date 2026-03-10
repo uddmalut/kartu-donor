@@ -17,7 +17,7 @@
         .card-container {
             width: 100%; max-width: 400px; border-radius: 28px; position: relative;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); overflow: hidden;
-            transition: all 0.3s ease; border-bottom-style: solid; border-bottom-width: 14px;
+            border-bottom-style: solid; border-bottom-width: 14px;
         }
 
         .geometric-bg {
@@ -41,17 +41,16 @@
         <p class="mt-4 text-slate-500 font-semibold animate-pulse">Menyiapkan Kartu Digital...</p>
     </div>
 
-    <div id="card-wrapper" style="padding: 10px;">
-        <div id="card-area" class="card-container hidden">
+    <div id="card-wrapper" style="padding: 0;">
+        <div id="card-area" class="card-container hidden bg-white">
             <div class="geometric-bg"></div>
             <div class="content-layer">
                 
                 <div class="inner-box flex justify-between items-center">
-                    <img id="logo-pmi" src="" alt="PMI Logo" class="h-12 object-contain">
-                    
+                    <img id="logo-pmi" src="" alt="PMI Logo" class="h-10 object-contain">
                     <div class="text-right">
-                        <h2 class="font-bold text-slate-800 text-[15px] tracking-wider leading-none mb-1">KARTU PENDONOR</h2>
-                        <p class="text-[10px] text-slate-500 font-bold uppercase leading-none">PMI Provinsi Maluku Utara</p>
+                        <h2 class="font-bold text-slate-800 text-[14px] tracking-wider mb-1">KARTU PENDONOR</h2>
+                        <p class="text-[10px] text-slate-500 font-bold uppercase">Provinsi Maluku Utara</p>
                     </div>
                 </div>
 
@@ -60,8 +59,8 @@
                         <canvas id="qr-canvas" class="w-20 h-20"></canvas>
                     </div>
                     <div class="text-center ml-4 flex-1">
-                        <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 leading-none">Gol. Darah</p>
-                        <h1 class="text-5xl font-extrabold drop-shadow-sm leading-none pt-1" id="gol-text">
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Gol. Darah</p>
+                        <h1 class="text-5xl font-extrabold" id="gol-text">
                             <span id="gol-main"></span><span id="gol-rh" class="text-3xl ml-1"></span>
                         </h1>
                     </div>
@@ -79,19 +78,19 @@
 
                 <div class="inner-box flex flex-col items-center justify-center py-4 mt-3">
                     <canvas id="barcode-canvas" class="h-12 w-[90%]"></canvas>
-                    <p id="val-kode" class="text-[14px] font-bold text-slate-600 tracking-[0.3em] font-mono mt-1 leading-none"></p>
+                    <p id="val-kode" class="text-[14px] font-bold text-slate-600 tracking-[0.3em] font-mono mt-1"></p>
                 </div>
             </div>
         </div>
     </div>
 
-    <button id="btn-download" onclick="downloadCard()" class="hidden mt-4 bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 items-center gap-2">
+    <button id="btn-download" onclick="downloadCard()" class="hidden mt-6 bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 items-center gap-2">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
         Simpan ke Galeri (JPG)
     </button>
 
     <script>
-        // MASUKKAN URL DEPLOYMENT GOOGLE APPS SCRIPT ANDA DI SINI!
+        // MASUKKAN URL DEPLOYMENT GOOGLE APPS SCRIPT ANDA DI SINI
         const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbw9ejXlcM_O-AYLO6DDTW5J4pbQjKMU3xdPJeGWJqDyFWJ_S087JCYe2Mn-1DjPfobW1Q/exec";
 
         function muatLogoPMI() {
@@ -174,25 +173,24 @@
             document.getElementById('loading').innerHTML = `<p class='text-slate-500 font-bold'>Data pendonor tidak ditemukan.</p>`;
         }
 
-        // FUNGSI DIRECT DOWNLOAD DENGAN SCROLL LOCK (ANTI-GESER)
+        // FUNGSI DOWNLOAD FINAL (Mengakali Pergeseran Posisi di iOS Safari)
         function downloadCard() {
             const card = document.getElementById('card-area');
             const btn = document.getElementById('btn-download');
             const originalText = btn.innerHTML;
             
             btn.innerHTML = `<div class="spinner border-t-white w-5 h-5"></div> Memproses...`;
-            
-            // KUNCI UTAMA: Paksa HP scroll ke paling atas (0,0) sebelum difoto!
+
+            // Trik khusus: Paksa gulir ke atas, lalu gunakan scrollY: -window.scrollY
             window.scrollTo(0, 0);
-            
-            // KUNCI KEDUA: Paksa canvas mengatur posisi Y ke 0
+
             html2canvas(card, { 
                 scale: 3, 
                 backgroundColor: null, 
                 useCORS: true, 
                 allowTaint: false,
-                scrollY: 0, 
-                scrollX: 0
+                scrollY: -window.scrollY, // Ini akan mengunci perhitungan posisi gambar
+                windowY: window.scrollY
             }).then(canvas => {
                 canvas.toBlob(function(blob) {
                     const namaFile = `Kartu_Donor_PMI_${document.getElementById('val-nama').innerText.replace(/\s+/g, '_')}.jpg`;
