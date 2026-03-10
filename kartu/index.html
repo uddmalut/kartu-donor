@@ -6,6 +6,9 @@
     <title>Kartu Donor Digital - PMI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
@@ -14,9 +17,10 @@
         .card-container {
             width: 100%; max-width: 400px; border-radius: 28px; position: relative;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); overflow: hidden;
-            transition: all 0.3s ease;
+            transition: all 0.3s ease; border-bottom-style: solid; border-bottom-width: 14px;
         }
 
+        /* Latar Geometris Mewah */
         .geometric-bg {
             position: absolute; inset: 0; opacity: 0.15; z-index: 0; mix-blend-mode: overlay;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='2'%3E%3Cpath d='M769 229L1037 250.9M927.1 49.1L1051.6 258.1M658.3 225.9L531.8 47.4M121.8 136.4L267.5 130.8M228.1 226.5L395.8 74.2M229 284.8L432.7 573.5M266.7 397.4L330.8 549.6M586.4 306.2L819.7 296M611 352.6L940.6 542.7M713 519.2L1122.9 286.2M900 435L922 662M1066.5 491L1142.2 436'/%3E%3Cpath d='M836 498.8L936.5 658M835.4 611L671 661M632 755.8L799.7 503.5M386 630.8L597.5 765.3M428.8 698.5L347.5 831.3'/%3E%3C/g%3E%3C/svg%3E");
@@ -25,10 +29,6 @@
 
         .content-layer { position: relative; z-index: 10; padding: 20px; }
         .inner-box { background: rgba(255, 255, 255, 0.95); border-radius: 18px; padding: 16px; margin-bottom: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); }
-        .info-table { width: 100%; font-size: 13px; color: #334155; border-collapse: separate; border-spacing: 0 6px; }
-        .info-table td.label { width: 30%; color: #64748b; font-weight: 600; vertical-align: top; }
-        .info-table td.value { width: 65%; font-weight: 700; color: #0f172a; word-break: break-word; }
-        .info-table td.colon { width: 5%; font-weight: 600; color: #64748b; vertical-align: top; }
         
         #loading { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px; }
         .spinner { border: 4px solid rgba(0,0,0,0.1); width: 40px; height: 40px; border-radius: 50%; border-left-color: #ef4444; animation: spin 1s linear infinite; }
@@ -39,10 +39,10 @@
 
     <div id="loading">
         <div class="spinner"></div>
-        <p class="mt-4 text-slate-500 font-semibold animate-pulse">Menyiapkan Kartu Digital...</p>
+        <p class="mt-4 text-slate-500 font-semibold animate-pulse">Menarik Data Pendonor...</p>
     </div>
 
-    <div id="card-area" class="card-container hidden" style="border-bottom-width: 14px; border-bottom-style: solid;">
+    <div id="card-area" class="card-container hidden">
         <div class="geometric-bg"></div>
         <div class="content-layer">
             
@@ -55,8 +55,8 @@
             </div>
 
             <div class="inner-box flex items-center justify-between p-5">
-                <div class="bg-white p-1.5 rounded-xl border border-slate-200 shadow-sm">
-                    <img id="qr-img" src="" alt="QR" class="w-20 h-20" crossorigin="anonymous">
+                <div class="bg-white p-1.5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-center">
+                    <canvas id="qr-canvas" class="w-20 h-20"></canvas>
                 </div>
                 <div class="text-center ml-4 flex-1">
                     <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Gol. Darah</p>
@@ -67,41 +67,40 @@
             </div>
 
             <div class="px-3 py-2 mb-2">
-                <table class="info-table text-white">
-                    <tr><td class="label text-white/80">No. KTP</td><td class="colon text-white/80">:</td><td id="val-ktp" class="value text-white"></td></tr>
-                    <tr><td class="label text-white/80">Nama</td><td class="colon text-white/80">:</td><td id="val-nama" class="value text-white"></td></tr>
-                    <tr><td class="label text-white/80">TTL</td><td class="colon text-white/80">:</td><td id="val-ttl" class="value text-white"></td></tr>
-                    <tr><td class="label text-white/80">Alamat</td><td class="colon text-white/80">:</td><td id="val-alamat" class="value text-white leading-snug"></td></tr>
-                    <tr><td class="label text-white/80">Wilayah</td><td class="colon text-white/80">:</td><td id="val-wilayah" class="value text-white"></td></tr>
+                <table class="w-full text-[13px] border-separate" style="border-spacing: 0 6px;">
+                    <tr><td class="lbl w-[30%] font-semibold align-top">No. KTP</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-ktp" class="val w-[65%] font-bold break-words"></td></tr>
+                    <tr><td class="lbl w-[30%] font-semibold align-top">Nama</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-nama" class="val w-[65%] font-bold break-words"></td></tr>
+                    <tr><td class="lbl w-[30%] font-semibold align-top">TTL</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-ttl" class="val w-[65%] font-bold break-words"></td></tr>
+                    <tr><td class="lbl w-[30%] font-semibold align-top">Alamat</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-alamat" class="val w-[65%] font-bold break-words leading-snug"></td></tr>
+                    <tr><td class="lbl w-[30%] font-semibold align-top">Wilayah</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-wilayah" class="val w-[65%] font-bold break-words"></td></tr>
                 </table>
             </div>
 
             <div class="inner-box flex flex-col items-center justify-center py-4 mt-3">
-                <img id="barcode-img" src="" alt="Barcode" class="h-12 w-[90%] object-fill opacity-90 mix-blend-multiply mb-1" crossorigin="anonymous">
-                <p id="val-kode" class="text-[14px] font-bold text-slate-600 tracking-[0.3em] font-mono"></p>
+                <canvas id="barcode-canvas" class="h-12 w-[90%]"></canvas>
+                <p id="val-kode" class="text-[14px] font-bold text-slate-600 tracking-[0.3em] font-mono mt-1"></p>
             </div>
         </div>
     </div>
 
-    <button id="btn-download" onclick="downloadCard()" class="hidden mt-6 bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 flex items-center gap-2">
+    <button id="btn-download" onclick="downloadCard()" class="hidden mt-6 bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 items-center gap-2">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
         Simpan ke Galeri (JPG)
     </button>
 
     <script>
-        // MASUKKAN URL DEPLOYMENT GOOGLE APPS SCRIPT ANDA DI SINI
-        const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbw9ejXlcM_O-AYLO6DDTW5J4pbQjKMU3xdPJeGWJqDyFWJ_S087JCYe2Mn-1DjPfobW1Q/exec";
+        // MASUKKAN URL DEPLOYMENT GOOGLE APPS SCRIPT ANDA DI SINI!
+        const GAS_WEBAPP_URL = "MASUKKAN_URL_GAS_ANDA_DISINI";
 
-        // Konfigurasi Warna Golongan Darah
+        // Konfigurasi Warna & Font Sesuai Request!
         const colors = {
-            'A':  { bg: 'from-red-600 to-red-800', border: '#7f1d1d', text: 'text-red-700' },
-            'B':  { bg: 'from-purple-500 to-purple-800', border: '#4c1d95', text: 'text-purple-700' },
-            'O':  { bg: 'from-sky-400 to-blue-700', border: '#1e3a8a', text: 'text-blue-700' },
-            'AB': { bg: 'from-amber-300 to-orange-500', border: '#9a3412', text: 'text-orange-700' },
-            '-':  { bg: 'from-slate-400 to-slate-600', border: '#334155', text: 'text-slate-700' }
+            'A':  { bg: 'from-yellow-300 to-amber-500', border: '#d97706', bloodTxt: 'text-amber-900', bodyTxt: 'text-slate-900', labelTxt: 'text-slate-700' }, // Kuning -> Tulisan Gelap
+            'B':  { bg: 'from-pink-400 to-rose-500', border: '#be185d', bloodTxt: 'text-white', bodyTxt: 'text-white', labelTxt: 'text-pink-100' }, // Pink -> Tulisan Putih
+            'O':  { bg: 'from-sky-400 to-blue-600', border: '#1d4ed8', bloodTxt: 'text-white', bodyTxt: 'text-white', labelTxt: 'text-blue-100' }, // Biru -> Tulisan Putih
+            'AB': { bg: 'from-slate-100 to-gray-300', border: '#64748b', bloodTxt: 'text-slate-800', bodyTxt: 'text-slate-900', labelTxt: 'text-slate-600' }, // Putih Abu -> Tulisan Gelap
+            '-':  { bg: 'from-gray-400 to-gray-600', border: '#374151', bloodTxt: 'text-white', bodyTxt: 'text-white', labelTxt: 'text-gray-200' } // Default
         };
 
-        // Ambil ID dari URL (Misal: ?id=MTAwMDE=)
         const urlParams = new URLSearchParams(window.location.search);
         const donorId = urlParams.get('id');
 
@@ -110,16 +109,21 @@
                 .then(response => response.json())
                 .then(data => {
                     if(data.status === "ok") {
-                        // Terapkan Warna
+                        // 1. Terapkan Warna Latar & Tulisan Golongan Darah
                         let golRaw = (data.gol || '-').toUpperCase();
                         let theme = colors[golRaw] || colors['-'];
                         
                         let card = document.getElementById('card-area');
                         card.classList.add('bg-gradient-to-br', ...theme.bg.split(' '));
                         card.style.borderColor = theme.border;
-                        document.getElementById('gol-text').classList.add(theme.text);
+                        document.getElementById('gol-text').classList.add(theme.bloodTxt);
 
-                        // Masukkan Data
+                        // 2. Terapkan Warna Teks Tabel (Kecerdasan Kontras)
+                        document.querySelectorAll('.lbl').forEach(el => el.classList.add(theme.labelTxt));
+                        document.querySelectorAll('.colon').forEach(el => el.classList.add(theme.labelTxt));
+                        document.querySelectorAll('.val').forEach(el => el.classList.add(theme.bodyTxt));
+
+                        // 3. Masukkan Data ke HTML
                         document.getElementById('gol-main').innerText = data.gol;
                         document.getElementById('gol-rh').innerText = data.rh;
                         document.getElementById('val-ktp').innerText = data.ktp;
@@ -129,14 +133,20 @@
                         document.getElementById('val-wilayah').innerText = data.wilayah;
                         document.getElementById('val-kode').innerText = data.kode;
 
-                        // Gambar QR & Barcode (Gunakan corsproxy agar bisa di-download via html2canvas)
-                        let rawQr = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(data.kode)}`;
-                        let rawBar = `https://bwipjs-api.metafloor.com/?bcid=code128&text=${encodeURIComponent(data.kode)}&scale=3&height=10&includetext=false`;
-                        
-                        document.getElementById('qr-img').src = `https://corsproxy.io/?${encodeURIComponent(rawQr)}`;
-                        document.getElementById('barcode-img').src = `https://corsproxy.io/?${encodeURIComponent(rawBar)}`;
+                        // 4. GENERATE QR CODE LOKAL
+                        new QRious({
+                            element: document.getElementById('qr-canvas'),
+                            value: data.kode,
+                            size: 150, background: 'white', foreground: 'black'
+                        });
 
-                        // Tampilkan Kartu
+                        // 5. GENERATE BARCODE LOKAL
+                        JsBarcode("#barcode-canvas", data.kode, {
+                            format: "CODE128", displayValue: false, background: "transparent",
+                            lineColor: "#0f172a", width: 2.5, height: 40, margin: 0
+                        });
+
+                        // 6. Tampilkan Kartu
                         document.getElementById('loading').style.display = 'none';
                         card.classList.remove('hidden');
                         document.getElementById('btn-download').classList.remove('hidden');
@@ -146,27 +156,27 @@
                     }
                 })
                 .catch(err => {
-                    document.getElementById('loading').innerHTML = `<p class='text-red-500 font-bold'>Gagal terhubung! Detail Error: ${err.message}</p>`;
-                    console.log(err);
+                    document.getElementById('loading').innerHTML = `<p class='text-red-500 font-bold'>Gagal terhubung! Cek URL GAS Anda.</p>`;
                 });
         } else {
-            document.getElementById('loading').innerHTML = `<p class='text-slate-500 font-bold'>Tidak ada data pendonor yang dicari.</p>`;
+            document.getElementById('loading').innerHTML = `<p class='text-slate-500 font-bold'>Data pendonor tidak ditemukan.</p>`;
         }
 
-        // Fungsi Download JPG
+        // FUNGSI DOWNLOAD YANG DIJAMIN BERHASIL (Karena sudah tidak ada API luar)
         function downloadCard() {
             const card = document.getElementById('card-area');
             const btn = document.getElementById('btn-download');
+            const originalText = btn.innerHTML;
             
             btn.innerHTML = `<div class="spinner border-t-white w-5 h-5"></div> Memproses...`;
             
-            html2canvas(card, { scale: 3, useCORS: true, allowTaint: false }).then(canvas => {
+            html2canvas(card, { scale: 3, backgroundColor: null }).then(canvas => {
                 let link = document.createElement('a');
-                link.download = `Kartu_Donor_${document.getElementById('val-nama').innerText.replace(/\s+/g, '_')}.jpg`;
-                link.href = canvas.toDataURL("image/jpeg", 0.95);
+                link.download = `Kartu_Donor_PMI_${document.getElementById('val-nama').innerText.replace(/\s+/g, '_')}.jpg`;
+                link.href = canvas.toDataURL("image/jpeg", 1.0);
                 link.click();
                 btn.innerHTML = `✅ Berhasil Disimpan!`;
-                setTimeout(() => { btn.innerHTML = `Simpan ke Galeri (JPG)`; }, 3000);
+                setTimeout(() => { btn.innerHTML = originalText; }, 3000);
             });
         }
     </script>
