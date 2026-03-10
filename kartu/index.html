@@ -26,8 +26,40 @@
             background-size: cover; background-position: center;
         }
 
+        /* HARDCODED STYLING UNTUK HTML2CANVAS (MENCEGAH BERGESER) */
         .content-layer { position: relative; z-index: 10; padding: 20px; }
-        .inner-box { background: rgba(255, 255, 255, 0.95); border-radius: 18px; padding: 16px; margin-bottom: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); }
+        
+        /* Mematikan fitur spacing Tailwind untuk area ini */
+        .hardcoded-inner { 
+            background: rgba(255, 255, 255, 0.95); border-radius: 18px; 
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            /* Penataan jarak manual klasik */
+            padding: 16px !important; 
+            margin-bottom: 12px !important;
+            margin-top: 0px !important; 
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        /* hardcoded khusus untuk tabel detail */
+        .hardcoded-table-box {
+            background: transparent !important;
+            padding: 0 12px !important;
+            margin-bottom: 8px !important;
+            margin-top: 0px !important;
+        }
+
+        .hardcoded-table { 
+            width: 100%; border-collapse: separate; 
+            /* Jarak manual antar baris tabel */
+            border-spacing: 0 6px !important; 
+        }
+
+        .hardcoded-table td { 
+            vertical-align: top !important; 
+            font-size: 13px !important; 
+            margin: 0 !important;
+            padding: 0 !important;
+        }
         
         #loading { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px; }
         .spinner { border: 4px solid rgba(0,0,0,0.1); width: 40px; height: 40px; border-radius: 50%; border-left-color: #ef4444; animation: spin 1s linear infinite; }
@@ -45,40 +77,39 @@
         <div class="geometric-bg"></div>
         <div class="content-layer">
             
-            <div class="inner-box flex justify-between items-center">
-                <img id="logo-pmi" src="" alt="PMI Logo" class="h-12 object-contain">
-                
-                <div class="text-right leading-tight">
-                    <h2 class="font-bold text-slate-800 text-[14px] tracking-wider">KARTU PENDONOR</h2>
-                    <p class="text-[10px] text-slate-500 font-bold uppercase">PMI Provinsi Maluku Utara</p>
+            <div class="hardcoded-inner">
+                <img id="logo-pmi" src="" alt="PMI Logo" class="h-12 object-contain m-0 p-0 block">
+                <div class="text-right leading-tight m-0 p-0">
+                    <h2 class="font-bold text-slate-800 text-[15px] tracking-wider m-0 p-0">KARTU PENDONOR</h2>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase m-0 p-0">PMI Provinsi Maluku Utara</p>
                 </div>
             </div>
 
-            <div class="inner-box flex items-center justify-between p-5">
-                <div class="bg-white p-1.5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-center">
-                    <canvas id="qr-canvas" class="w-20 h-20"></canvas>
+            <div class="hardcoded-inner" style="padding: 20px !important;">
+                <div class="bg-white p-1.5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-center m-0">
+                    <canvas id="qr-canvas" class="w-20 h-20 m-0 p-0 block"></canvas>
                 </div>
-                <div class="text-center ml-4 flex-1">
-                    <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Gol. Darah</p>
-                    <h1 class="text-5xl font-extrabold drop-shadow-sm" id="gol-text">
+                <div class="text-center ml-4 flex-1 m-0 p-0">
+                    <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 m-0 p-0">Gol. Darah</p>
+                    <h1 class="text-5xl font-extrabold drop-shadow-sm m-0 p-0" id="gol-text">
                         <span id="gol-main"></span><span id="gol-rh" class="text-3xl ml-1"></span>
                     </h1>
                 </div>
             </div>
 
-            <div class="px-3 py-2 mb-2">
-                <table class="w-full text-[13px] border-separate" style="border-spacing: 0 6px;">
-                    <tr><td class="lbl w-[30%] font-semibold align-top">No. KTP</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-ktp" class="val w-[65%] font-bold break-words"></td></tr>
-                    <tr><td class="lbl w-[30%] font-semibold align-top">Nama</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-nama" class="val w-[65%] font-bold break-words"></td></tr>
-                    <tr><td class="lbl w-[30%] font-semibold align-top">TTL</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-ttl" class="val w-[65%] font-bold break-words"></td></tr>
-                    <tr><td class="lbl w-[30%] font-semibold align-top">Alamat</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-alamat" class="val w-[65%] font-bold break-words leading-snug"></td></tr>
-                    <tr><td class="lbl w-[30%] font-semibold align-top">Wilayah</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-wilayah" class="val w-[65%] font-bold break-words"></td></tr>
+            <div class="hardcoded-table-box">
+                <table class="hardcoded-table">
+                    <tr><td class="lbl w-[30%] font-semibold">No. KTP</td><td class="colon w-[5%] font-semibold">:</td><td id="val-ktp" class="val w-[65%] font-bold break-words"></td></tr>
+                    <tr><td class="lbl w-[30%] font-semibold">Nama</td><td class="colon w-[5%] font-semibold">:</td><td id="val-nama" class="val w-[65%] font-bold break-words"></td></tr>
+                    <tr><td class="lbl w-[30%] font-semibold">TTL</td><td class="colon w-[5%] font-semibold">:</td><td id="val-ttl" class="val w-[65%] font-bold break-words"></td></tr>
+                    <tr><td class="lbl w-[30%] font-semibold">Alamat</td><td class="colon w-[5%] font-semibold">:</td><td id="val-alamat" class="val w-[65%] font-bold break-words leading-snug"></td></tr>
+                    <tr><td class="lbl w-[30%] font-semibold">Wilayah</td><td class="colon w-[5%] font-semibold">:</td><td id="val-wilayah" class="val w-[65%] font-bold break-words"></td></tr>
                 </table>
             </div>
 
-            <div class="inner-box flex flex-col items-center justify-center py-4 mt-3">
-                <canvas id="barcode-canvas" class="h-12 w-[90%]"></canvas>
-                <p id="val-kode" class="text-[14px] font-bold text-slate-600 tracking-[0.3em] font-mono mt-1"></p>
+            <div class="hardcoded-inner flex-col items-center justify-center" style="padding: 16px !important; margin-top: 12px !important; margin-bottom: 0px !important;">
+                <canvas id="barcode-canvas" class="h-12 w-[90%] m-0 p-0 block"></canvas>
+                <p id="val-kode" class="text-[14px] font-bold text-slate-600 tracking-[0.3em] font-mono mt-1 m-0 p-0"></p>
             </div>
         </div>
     </div>
@@ -89,31 +120,25 @@
     </button>
 
     <script>
-        // MASUKKAN URL DEPLOYMENT GOOGLE APPS SCRIPT ANDA DI SINI!
+        // MASUKKAN URL DEPLOYMENT GOOGLE APPS SCRIPT ANDA DI SINI
         const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbw9ejXlcM_O-AYLO6DDTW5J4pbQjKMU3xdPJeGWJqDyFWJ_S087JCYe2Mn-1DjPfobW1Q/exec";
 
-        // =========================================================================
-        // SCRIPT AJAIB ANTI-BLANK IPHONE: Ubah Logo Imgur jadi Canvas Lokal
-        // =========================================================================
         function muatLogoPMI() {
             const img = new Image();
-            img.crossOrigin = "Anonymous"; // Meminta izin ke Imgur
+            img.crossOrigin = "Anonymous"; 
             img.onload = function() {
                 const canvas = document.createElement('canvas');
                 canvas.width = img.width; canvas.height = img.height;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0);
-                document.getElementById('logo-pmi').src = canvas.toDataURL('image/png'); // Render jadi Base64
+                document.getElementById('logo-pmi').src = canvas.toDataURL('image/png');
             };
             img.onerror = function() {
-                // Jika error, paksa pakai link asli
                 document.getElementById('logo-pmi').src = "https://i.imgur.com/n7ftJCZ.png";
             };
-            // "?nocache" untuk mengecoh Safari agar tidak mengambil gambar rusak dari riwayat memori (cache)
             img.src = "https://i.imgur.com/n7ftJCZ.png?nocache=" + new Date().getTime();
         }
         muatLogoPMI();
-        // =========================================================================
 
         const colors = {
             'A':  { bg: 'from-yellow-300 to-amber-500', border: '#d97706', bloodTxt: 'text-amber-900', bodyTxt: 'text-slate-900', labelTxt: 'text-slate-700' }, 
@@ -178,7 +203,7 @@
             document.getElementById('loading').innerHTML = `<p class='text-slate-500 font-bold'>Data pendonor tidak ditemukan.</p>`;
         }
 
-        // FUNGSI DIRECT DOWNLOAD (Tanpa Menu Share)
+        // FUNGSI DIRECT DOWNLOAD FINAL (Anti Bergeser)
         function downloadCard() {
             const card = document.getElementById('card-area');
             const btn = document.getElementById('btn-download');
@@ -190,7 +215,6 @@
                 canvas.toBlob(function(blob) {
                     const namaFile = `Kartu_Donor_PMI_${document.getElementById('val-nama').innerText.replace(/\s+/g, '_')}.jpg`;
                     
-                    // Paksa browser melakukan Direct Download
                     const url = window.URL.createObjectURL(blob);
                     let link = document.createElement('a');
                     link.download = namaFile;
