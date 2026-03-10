@@ -9,7 +9,8 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.min.js"></script>
     
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
@@ -42,15 +43,14 @@
     </div>
 
     <div id="card-wrapper" style="padding: 10px;">
-        <div id="card-area" class="card-container hidden">
+        <div id="card-area" class="card-container hidden bg-white">
             <div class="geometric-bg"></div>
             <div class="content-layer">
                 
                 <div class="inner-box flex justify-between items-center">
                     <img id="logo-pmi" src="" alt="PMI Logo" class="h-12 object-contain">
-                    
                     <div class="text-right">
-                        <h2 class="font-bold text-slate-800 text-[15px] tracking-wider leading-none mb-1">KARTU PENDONOR</h2>
+                        <h2 class="font-bold text-slate-800 text-[15px] tracking-wider mb-1 leading-none">KARTU PENDONOR</h2>
                         <p class="text-[10px] text-slate-500 font-bold uppercase leading-none">PMI Provinsi Maluku Utara</p>
                     </div>
                 </div>
@@ -174,7 +174,7 @@
             document.getElementById('loading').innerHTML = `<p class='text-slate-500 font-bold'>Data pendonor tidak ditemukan.</p>`;
         }
 
-        // FUNGSI DIRECT DOWNLOAD DENGAN SCROLL LOCK (ANTI-GESER)
+        // FUNGSI SCREENSHOT MURNI MENGGUNAKAN HTML-TO-IMAGE
         function downloadCard() {
             const card = document.getElementById('card-area');
             const btn = document.getElementById('btn-download');
@@ -182,35 +182,26 @@
             
             btn.innerHTML = `<div class="spinner border-t-white w-5 h-5"></div> Memproses...`;
             
-            // KUNCI UTAMA: Paksa HP scroll ke paling atas (0,0) sebelum difoto!
-            window.scrollTo(0, 0);
-            
-            // KUNCI KEDUA: Paksa canvas mengatur posisi Y ke 0
-            html2canvas(card, { 
-                scale: 3, 
-                backgroundColor: null, 
-                useCORS: true, 
-                allowTaint: false,
-                scrollY: 0, 
-                scrollX: 0
-            }).then(canvas => {
-                canvas.toBlob(function(blob) {
+            // htmlToImage menangkap layar seutuhnya tanpa melukis ulang CSS
+            htmlToImage.toJpeg(card, { quality: 1.0, pixelRatio: 3 })
+                .then(function (dataUrl) {
+                    // Paksa melakukan Direct Download
                     const namaFile = `Kartu_Donor_PMI_${document.getElementById('val-nama').innerText.replace(/\s+/g, '_')}.jpg`;
-                    
-                    const url = window.URL.createObjectURL(blob);
                     let link = document.createElement('a');
                     link.download = namaFile;
-                    link.href = url;
+                    link.href = dataUrl;
                     document.body.appendChild(link);
                     link.click();
                     document.body.removeChild(link);
-                    window.URL.revokeObjectURL(url);
                     
                     btn.innerHTML = `✅ Berhasil Diunduh!`;
                     setTimeout(() => { btn.innerHTML = originalText; }, 3000);
-                    
-                }, 'image/jpeg', 0.95);
-            });
+                })
+                .catch(function (error) {
+                    console.error('Oops, ada yang salah!', error);
+                    btn.innerHTML = `❌ Gagal Menyimpan`;
+                    setTimeout(() => { btn.innerHTML = originalText; }, 3000);
+                });
         }
     </script>
 </body>
