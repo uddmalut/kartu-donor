@@ -20,7 +20,6 @@
             transition: all 0.3s ease; border-bottom-style: solid; border-bottom-width: 14px;
         }
 
-        /* Latar Geometris Mewah */
         .geometric-bg {
             position: absolute; inset: 0; opacity: 0.15; z-index: 0; mix-blend-mode: overlay;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='2'%3E%3Cpath d='M769 229L1037 250.9M927.1 49.1L1051.6 258.1M658.3 225.9L531.8 47.4M121.8 136.4L267.5 130.8M228.1 226.5L395.8 74.2M229 284.8L432.7 573.5M266.7 397.4L330.8 549.6M586.4 306.2L819.7 296M611 352.6L940.6 542.7M713 519.2L1122.9 286.2M900 435L922 662M1066.5 491L1142.2 436'/%3E%3Cpath d='M836 498.8L936.5 658M835.4 611L671 661M632 755.8L799.7 503.5M386 630.8L597.5 765.3M428.8 698.5L347.5 831.3'/%3E%3C/g%3E%3C/svg%3E");
@@ -39,7 +38,7 @@
 
     <div id="loading">
         <div class="spinner"></div>
-        <p class="mt-4 text-slate-500 font-semibold animate-pulse">Memuat Data...</p>
+        <p class="mt-4 text-slate-500 font-semibold animate-pulse">Menarik Data Pendonor...</p>
     </div>
 
     <div id="card-area" class="card-container hidden">
@@ -47,10 +46,10 @@
         <div class="content-layer">
             
             <div class="inner-box flex justify-between items-center">
-                <img src="https://i.imgur.com/n7ftJCZ.png" alt="PMI Logo" class="h-12 object-contain">
+                <img src="data:image/png;base64,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" alt="PMI Logo" class="h-10 object-contain">
                 <div class="text-right leading-tight">
                     <h2 class="font-bold text-slate-800 text-[14px] tracking-wider">KARTU PENDONOR</h2>
-                    <p class="text-[10px] text-slate-500 font-bold uppercase">UDD PMI Prov. Maluku Utara</p>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase">UDD PMI Provinsi Maluku Utara</p>
                 </div>
             </div>
 
@@ -89,16 +88,15 @@
     </button>
 
     <script>
-        // MASUKKAN URL DEPLOYMENT GOOGLE APPS SCRIPT ANDA DI SINI!
+        // MASUKKAN URL DEPLOYMENT GOOGLE APPS SCRIPT ANDA DI SINI
         const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbw9ejXlcM_O-AYLO6DDTW5J4pbQjKMU3xdPJeGWJqDyFWJ_S087JCYe2Mn-1DjPfobW1Q/exec";
 
-        // Konfigurasi Warna & Font Sesuai Request!
         const colors = {
-            'A':  { bg: 'from-yellow-300 to-amber-500', border: '#d97706', bloodTxt: 'text-amber-900', bodyTxt: 'text-slate-900', labelTxt: 'text-slate-700' }, // Kuning -> Tulisan Gelap
-            'B':  { bg: 'from-pink-400 to-rose-500', border: '#be185d', bloodTxt: 'text-white', bodyTxt: 'text-white', labelTxt: 'text-pink-100' }, // Pink -> Tulisan Putih
-            'O':  { bg: 'from-sky-400 to-blue-600', border: '#1d4ed8', bloodTxt: 'text-white', bodyTxt: 'text-white', labelTxt: 'text-blue-100' }, // Biru -> Tulisan Putih
-            'AB': { bg: 'from-slate-100 to-gray-300', border: '#64748b', bloodTxt: 'text-slate-800', bodyTxt: 'text-slate-900', labelTxt: 'text-slate-600' }, // Putih Abu -> Tulisan Gelap
-            '-':  { bg: 'from-gray-400 to-gray-600', border: '#374151', bloodTxt: 'text-white', bodyTxt: 'text-white', labelTxt: 'text-gray-200' } // Default
+            'A':  { bg: 'from-yellow-300 to-amber-500', border: '#d97706', bloodTxt: 'text-amber-900', bodyTxt: 'text-slate-900', labelTxt: 'text-slate-700' }, 
+            'B':  { bg: 'from-pink-400 to-rose-500', border: '#be185d', bloodTxt: 'text-white', bodyTxt: 'text-white', labelTxt: 'text-pink-100' }, 
+            'O':  { bg: 'from-sky-400 to-blue-600', border: '#1d4ed8', bloodTxt: 'text-white', bodyTxt: 'text-white', labelTxt: 'text-blue-100' }, 
+            'AB': { bg: 'from-slate-100 to-gray-300', border: '#64748b', bloodTxt: 'text-slate-800', bodyTxt: 'text-slate-900', labelTxt: 'text-slate-600' }, 
+            '-':  { bg: 'from-gray-400 to-gray-600', border: '#374151', bloodTxt: 'text-white', bodyTxt: 'text-white', labelTxt: 'text-gray-200' } 
         };
 
         const urlParams = new URLSearchParams(window.location.search);
@@ -109,7 +107,6 @@
                 .then(response => response.json())
                 .then(data => {
                     if(data.status === "ok") {
-                        // 1. Terapkan Warna Latar & Tulisan Golongan Darah
                         let golRaw = (data.gol || '-').toUpperCase();
                         let theme = colors[golRaw] || colors['-'];
                         
@@ -118,12 +115,10 @@
                         card.style.borderColor = theme.border;
                         document.getElementById('gol-text').classList.add(theme.bloodTxt);
 
-                        // 2. Terapkan Warna Teks Tabel (Kecerdasan Kontras)
                         document.querySelectorAll('.lbl').forEach(el => el.classList.add(theme.labelTxt));
                         document.querySelectorAll('.colon').forEach(el => el.classList.add(theme.labelTxt));
                         document.querySelectorAll('.val').forEach(el => el.classList.add(theme.bodyTxt));
 
-                        // 3. Masukkan Data ke HTML
                         document.getElementById('gol-main').innerText = data.gol;
                         document.getElementById('gol-rh').innerText = data.rh;
                         document.getElementById('val-ktp').innerText = data.ktp;
@@ -133,20 +128,17 @@
                         document.getElementById('val-wilayah').innerText = data.wilayah;
                         document.getElementById('val-kode').innerText = data.kode;
 
-                        // 4. GENERATE QR CODE LOKAL
                         new QRious({
                             element: document.getElementById('qr-canvas'),
                             value: data.kode,
                             size: 150, background: 'white', foreground: 'black'
                         });
 
-                        // 5. GENERATE BARCODE LOKAL
                         JsBarcode("#barcode-canvas", data.kode, {
                             format: "CODE128", displayValue: false, background: "transparent",
                             lineColor: "#0f172a", width: 2.5, height: 40, margin: 0
                         });
 
-                        // 6. Tampilkan Kartu
                         document.getElementById('loading').style.display = 'none';
                         card.classList.remove('hidden');
                         document.getElementById('btn-download').classList.remove('hidden');
@@ -162,8 +154,6 @@
             document.getElementById('loading').innerHTML = `<p class='text-slate-500 font-bold'>Data pendonor tidak ditemukan.</p>`;
         }
 
-        // FUNGSI DOWNLOAD YANG DIJAMIN BERHASIL (Karena sudah tidak ada API luar)
-        // FUNGSI DOWNLOAD YANG DIOPTIMALKAN UNTUK IPHONE & ANDROID MODERN
         function downloadCard() {
             const card = document.getElementById('card-area');
             const btn = document.getElementById('btn-download');
@@ -171,13 +161,11 @@
             
             btn.innerHTML = `<div class="spinner border-t-white w-5 h-5"></div> Memproses...`;
             
-            html2canvas(card, { scale: 3, backgroundColor: null }).then(canvas => {
-                // Menggunakan Blob (File Murni) agar iPhone Safari tidak error saat klik "Lihat"
+            html2canvas(card, { scale: 3, backgroundColor: null, useCORS: true }).then(canvas => {
                 canvas.toBlob(function(blob) {
                     const namaFile = `Kartu_Donor_PMI_${document.getElementById('val-nama').innerText.replace(/\s+/g, '_')}.jpg`;
                     const file = new File([blob], namaFile, { type: 'image/jpeg' });
                     
-                    // Cek apakah HP mendukung fitur "Share" bawaan Apple/Android
                     if (navigator.canShare && navigator.canShare({ files: [file] })) {
                         navigator.share({
                             files: [file],
@@ -186,11 +174,9 @@
                             btn.innerHTML = `✅ Berhasil Disimpan!`;
                             setTimeout(() => { btn.innerHTML = originalText; }, 3000);
                         }).catch(err => {
-                            // Jika user membatalkan (close popup), kembalikan tulisan tombol
                             btn.innerHTML = originalText;
                         });
                     } else {
-                        // Jalur alternatif untuk Laptop / PC / Browser versi lama
                         const url = window.URL.createObjectURL(blob);
                         let link = document.createElement('a');
                         link.download = namaFile;
