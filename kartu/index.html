@@ -50,7 +50,7 @@
                 <img src="https://i.imgur.com/n7ftJCZ.png" alt="PMI Logo" class="h-12 object-contain">
                 <div class="text-right leading-tight">
                     <h2 class="font-bold text-slate-800 text-[14px] tracking-wider">KARTU PENDONOR</h2>
-                    <p class="text-[10px] text-slate-500 font-bold uppercase">Provinsi Maluku Utara</p>
+                    <p class="text-[10px] text-slate-500 font-bold uppercase">UDD PMI Prov. Maluku Utara</p>
                 </div>
             </div>
 
@@ -163,6 +163,7 @@
         }
 
         // FUNGSI DOWNLOAD YANG DIJAMIN BERHASIL (Karena sudah tidak ada API luar)
+        // FUNGSI DOWNLOAD YANG DIOPTIMALKAN UNTUK IPHONE & ANDROID MODERN
         function downloadCard() {
             const card = document.getElementById('card-area');
             const btn = document.getElementById('btn-download');
@@ -171,12 +172,38 @@
             btn.innerHTML = `<div class="spinner border-t-white w-5 h-5"></div> Memproses...`;
             
             html2canvas(card, { scale: 3, backgroundColor: null }).then(canvas => {
-                let link = document.createElement('a');
-                link.download = `Kartu_Donor_PMI_${document.getElementById('val-nama').innerText.replace(/\s+/g, '_')}.jpg`;
-                link.href = canvas.toDataURL("image/jpeg", 1.0);
-                link.click();
-                btn.innerHTML = `✅ Berhasil Disimpan!`;
-                setTimeout(() => { btn.innerHTML = originalText; }, 3000);
+                // Menggunakan Blob (File Murni) agar iPhone Safari tidak error saat klik "Lihat"
+                canvas.toBlob(function(blob) {
+                    const namaFile = `Kartu_Donor_PMI_${document.getElementById('val-nama').innerText.replace(/\s+/g, '_')}.jpg`;
+                    const file = new File([blob], namaFile, { type: 'image/jpeg' });
+                    
+                    // Cek apakah HP mendukung fitur "Share" bawaan Apple/Android
+                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                        navigator.share({
+                            files: [file],
+                            title: 'Kartu Donor PMI Maluku Utara'
+                        }).then(() => {
+                            btn.innerHTML = `✅ Berhasil Disimpan!`;
+                            setTimeout(() => { btn.innerHTML = originalText; }, 3000);
+                        }).catch(err => {
+                            // Jika user membatalkan (close popup), kembalikan tulisan tombol
+                            btn.innerHTML = originalText;
+                        });
+                    } else {
+                        // Jalur alternatif untuk Laptop / PC / Browser versi lama
+                        const url = window.URL.createObjectURL(blob);
+                        let link = document.createElement('a');
+                        link.download = namaFile;
+                        link.href = url;
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        window.URL.revokeObjectURL(url);
+                        
+                        btn.innerHTML = `✅ Berhasil Diunduh!`;
+                        setTimeout(() => { btn.innerHTML = originalText; }, 3000);
+                    }
+                }, 'image/jpeg', 0.95);
             });
         }
     </script>
