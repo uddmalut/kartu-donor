@@ -1,8 +1,11 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
+   <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="color-scheme" content="light">
+    
     <title>Kartu Donor Digital - PMI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -12,6 +15,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     
     <style>
+        :root { color-scheme: light; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
         
         .card-container {
@@ -110,12 +114,13 @@
         }
         muatLogoPMI();
 
+       // PENGATURAN WARNA FINAL (Sudah disesuaikan agar tulisan golongan darah kontras di atas kotak putih)
         const colors = {
-            'A':  { bg: 'from-yellow-300 to-amber-500', border: '#d97706', bloodTxt: 'text-amber-900', bodyTxt: 'text-slate-900', labelTxt: 'text-slate-700' }, 
-            'B':  { bg: 'from-pink-400 to-rose-500', border: '#be185d', bloodTxt: 'text-white', bodyTxt: 'text-white', labelTxt: 'text-pink-100' }, 
-            'O':  { bg: 'from-sky-400 to-blue-600', border: '#1d4ed8', bloodTxt: 'text-white', bodyTxt: 'text-white', labelTxt: 'text-blue-100' }, 
-            'AB': { bg: 'from-slate-100 to-gray-300', border: '#64748b', bloodTxt: 'text-slate-800', bodyTxt: 'text-slate-900', labelTxt: 'text-slate-600' }, 
-            '-':  { bg: 'from-gray-400 to-gray-600', border: '#374151', bloodTxt: 'text-white', bodyTxt: 'text-white', labelTxt: 'text-gray-200' } 
+            'A':  { bg: 'from-yellow-300 to-amber-500', border: '#d97706', bloodTxt: 'text-amber-600', bodyTxt: 'text-slate-900', labelTxt: 'text-slate-700' }, 
+            'B':  { bg: 'from-pink-400 to-rose-500', border: '#be185d', bloodTxt: 'text-rose-600',  bodyTxt: 'text-white', labelTxt: 'text-pink-100' }, 
+            'O':  { bg: 'from-sky-400 to-blue-600', border: '#1d4ed8', bloodTxt: 'text-blue-700',  bodyTxt: 'text-white', labelTxt: 'text-blue-100' }, 
+            'AB': { bg: 'from-slate-100 to-gray-300', border: '#64748b', bloodTxt: 'text-slate-700', bodyTxt: 'text-slate-900', labelTxt: 'text-slate-600' }, 
+            '-':  { bg: 'from-gray-400 to-gray-600', border: '#374151', bloodTxt: 'text-gray-700',  bodyTxt: 'text-white', labelTxt: 'text-gray-200' } 
         };
 
         const urlParams = new URLSearchParams(window.location.search);
