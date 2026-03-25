@@ -3,13 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <meta name="color-scheme" content="light">
-    
-    <title>Kartu Donor Digital - PMI (Story Mode)</title>
+    <title>Kartu Donor Digital - PMI (Story Mode Soft)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -18,17 +15,16 @@
         :root { color-scheme: light; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; display: flex; flex-direction: column; justify-content: flex-start; align-items: center; min-height: 100vh; margin: 0; padding: 0; }
         
-        /* CONTAINER UTAMA - Memaksa Rasio 9:16 (Story) & Sudut Siku */
+        /* CONTAINER UTAMA - Rasio 9:16 dengan sudut luar tetap tegas */
         .card-container {
             width: 100%;
-            max-width: 450px; /* Lebar maksimal di web agar tidak terlalu besar */
-            aspect-ratio: 9 / 16; /* KUNCI RASIO STORY */
+            max-width: 450px;
+            aspect-ratio: 9 / 16;
             position: relative;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             overflow: hidden;
             border-bottom-style: solid;
-            border-bottom-width: 16px;
-            /* Border radius dihapus total */
+            border-bottom-width: 14px;
         }
 
         .geometric-bg {
@@ -37,21 +33,20 @@
             background-size: cover; background-position: center;
         }
 
-        /* Content Layer memnuhi tinggi kartu dengan flex */
         .content-layer {
             position: relative; z-index: 10;
             height: 100%;
             display: flex; flex-direction: column;
-            justify-content: space-between; /* Sebar elemen dari atas ke bawah */
-            padding: 30px 24px 20px 24px;
+            justify-content: space-between;
+            padding: 30px 24px 24px 24px;
         }
 
-        /* Kotak Putih Dalam - Sudut Siku */
+        /* KOTAK DALAM - Menggunakan lengkungan (rounded) agar luwes dan tidak kaku */
         .inner-box {
             background: rgba(255, 255, 255, 0.95);
-            /* Border radius dihapus */
+            border-radius: 24px; /* Lengkungan yang manis untuk isi */
             padding: 20px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
         }
         
         #loading { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px; }
@@ -71,21 +66,21 @@
             <div class="geometric-bg"></div>
             <div class="content-layer">
                 
-                <div class="inner-box flex flex-col items-center text-center">
-                    <img id="logo-pmi" src="" alt="PMI Logo" class="h-14 object-contain mb-3">
-                    <div class="">
-                        <h2 class="font-extrabold text-slate-900 text-[18px] tracking-wider mb-1">KARTU PENDONOR DIGITAL</h2>
-                        <p class="text-[12px] text-slate-600 font-bold uppercase tracking-widest">UDD PMI Provinsi Maluku Utara</p>
+                <div class="inner-box flex flex-col items-center text-center !py-4">
+                    <img id="logo-pmi" src="" alt="PMI Logo" class="h-12 object-contain mb-2">
+                    <div>
+                        <h2 class="font-extrabold text-slate-900 text-[16px] tracking-wider mb-0.5">KARTU PENDONOR DIGITAL</h2>
+                        <p class="text-[10px] text-slate-600 font-bold uppercase tracking-widest">UDD PMI Provinsi Maluku Utara</p>
                     </div>
                 </div>
 
-                <div class="inner-box flex flex-col items-center justify-center p-8">
-                    <div class="bg-white p-3 border border-slate-200 shadow-sm flex items-center justify-center mb-5">
-                        <canvas id="qr-canvas" class="w-28 h-28"></canvas>
+                <div class="inner-box flex flex-col items-center justify-center py-6 px-4">
+                    <div class="bg-white p-3 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-center mb-4">
+                        <canvas id="qr-canvas" class="w-24 h-24"></canvas>
                     </div>
                     <div class="text-center">
-                        <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Golongan Darah</p>
-                        <h1 class="text-7xl font-extrabold" id="gol-text">
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Golongan Darah</p>
+                        <h1 class="text-6xl font-extrabold leading-none" id="gol-text">
                             <span id="gol-main"></span><span id="gol-rh" class="text-4xl ml-1"></span>
                         </h1>
                     </div>
@@ -93,16 +88,18 @@
 
                 <div class="flex flex-col gap-3">
                     <div class="inner-box px-5 py-4">
-                        <table class="w-full text-[14px] border-separate" style="border-spacing: 0 6px;">
-                            <tr><td class="lbl w-[30%] font-semibold align-top pb-1">Nama</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-nama" class="val w-[65%] font-extrabold break-words"></td></tr>
-                            <tr><td class="lbl w-[30%] font-semibold align-top pb-1">No. KTP</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-ktp" class="val w-[65%] font-bold break-words text-slate-700"></td></tr>
-                            <tr><td class="lbl w-[30%] font-semibold align-top pb-1">Wilayah</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-wilayah" class="val w-[65%] font-bold break-words text-slate-700"></td></tr>
+                        <table class="w-full text-[13px] border-separate" style="border-spacing: 0 5px;">
+                            <tr><td class="lbl w-[28%] font-semibold align-top">Nama</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-nama" class="val w-[67%] font-extrabold break-words"></td></tr>
+                            <tr><td class="lbl w-[28%] font-semibold align-top">No. KTP</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-ktp" class="val w-[67%] font-bold break-words text-slate-700"></td></tr>
+                            <tr><td class="lbl w-[28%] font-semibold align-top">TTL</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-ttl" class="val w-[67%] font-bold break-words text-slate-700"></td></tr>
+                            <tr><td class="lbl w-[28%] font-semibold align-top">Alamat</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-alamat" class="val w-[67%] font-bold break-words text-slate-700 leading-snug"></td></tr>
+                            <tr><td class="lbl w-[28%] font-semibold align-top">Wilayah</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-wilayah" class="val w-[67%] font-bold break-words text-slate-700"></td></tr>
                         </table>
                     </div>
 
-                    <div class="inner-box flex flex-col items-center justify-center py-5 mt-1">
-                        <canvas id="barcode-canvas" class="h-14 w-[95%]"></canvas>
-                        <p id="val-kode" class="text-[16px] font-bold text-slate-700 tracking-[0.3em] font-mono mt-2"></p>
+                    <div class="inner-box flex flex-col items-center justify-center py-4">
+                        <canvas id="barcode-canvas" class="h-12 w-[95%]"></canvas>
+                        <p id="val-kode" class="text-[14px] font-bold text-slate-700 tracking-[0.3em] font-mono mt-1"></p>
                     </div>
                 </div>
 
@@ -110,13 +107,8 @@
         </div>
     </div>
 
-    <button id="btn-download" onclick="downloadCard()" class="hidden my-8 bg-slate-800 hover:bg-slate-900 text-white font-bold py-3.5 px-10 shadow-lg transition duration-300 items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-        Simpan ke Galeri (JPG)
-    </button>
-
     <script>
-        // MASUKKAN URL DEPLOYMENT GOOGLE APPS SCRIPT ANDA DI SINI
+        // MASUKKAN KEMBALI URL WEBAPP GAS ANDA DI SINI
         const GAS_WEBAPP_URL = "https://script.google.com/macros/s/AKfycbw9ejXlcM_O-AYLO6DDTW5J4pbQjKMU3xdPJeGWJqDyFWJ_S087JCYe2Mn-1DjPfobW1Q/exec";
 
         function muatLogoPMI() {
@@ -136,7 +128,6 @@
         }
         muatLogoPMI();
 
-       // PENGATURAN WARNA FINAL (Sudut gradasi disesuaikan untuk portrait)
         const colors = {
             'A':  { bg: 'from-yellow-300 to-amber-500', border: '#d97706', bloodTxt: 'text-amber-600', bodyTxt: 'text-slate-900', labelTxt: 'text-slate-700' }, 
             'B':  { bg: 'from-pink-400 to-rose-500', border: '#be185d', bloodTxt: 'text-rose-600',  bodyTxt: 'text-white', labelTxt: 'text-pink-100' }, 
@@ -157,37 +148,35 @@
                         let theme = colors[golRaw] || colors['-'];
                         
                         let card = document.getElementById('card-area');
-                        // Gradasi diarahkan ke bawah (b) untuk portrait
                         card.classList.add('bg-gradient-to-b', ...theme.bg.split(' '));
                         card.style.borderColor = theme.border;
                         document.getElementById('gol-text').classList.add(theme.bloodTxt);
 
                         document.querySelectorAll('.lbl').forEach(el => el.classList.add(theme.labelTxt));
                         document.querySelectorAll('.colon').forEach(el => el.classList.add(theme.labelTxt));
-                        // Bagian .val dibiarkan Tailwind default jika theme.bodyTxt white agar kontras di kotak putih
 
                         document.getElementById('gol-main').innerText = data.gol;
                         document.getElementById('gol-rh').innerText = data.rh;
                         document.getElementById('val-ktp').innerText = data.ktp;
                         document.getElementById('val-nama').innerText = data.nama;
+                        document.getElementById('val-ttl').innerText = data.ttl; // Menambahkan TTL
+                        document.getElementById('val-alamat').innerText = data.alamat; // Menambahkan Alamat
                         document.getElementById('val-wilayah').innerText = data.wilayah;
                         document.getElementById('val-kode').innerText = data.kode;
 
                         new QRious({
                             element: document.getElementById('qr-canvas'),
                             value: data.kode,
-                            size: 200, background: 'white', foreground: 'black'
+                            size: 180, background: 'white', foreground: 'black'
                         });
 
                         JsBarcode("#barcode-canvas", data.kode, {
                             format: "CODE128", displayValue: false, background: "transparent",
-                            lineColor: "#0f172a", width: 3, height: 60, margin: 0
+                            lineColor: "#0f172a", width: 3, height: 50, margin: 0
                         });
 
                         document.getElementById('loading').style.display = 'none';
                         card.classList.remove('hidden');
-                        document.getElementById('btn-download').classList.remove('hidden');
-                        document.getElementById('btn-download').classList.add('flex');
                     } else {
                         document.getElementById('loading').innerHTML = `<p class='text-red-500 font-bold text-center mt-10 text-xl px-5'>⚠️ ${data.pesan}</p>`;
                     }
@@ -197,42 +186,6 @@
                 });
         } else {
             document.getElementById('loading').innerHTML = `<p class='text-slate-500 font-bold mt-10 text-center px-5'>Data pendonor tidak ditemukan.</p>`;
-        }
-
-        function downloadCard() {
-            const card = document.getElementById('card-area');
-            const btn = document.getElementById('btn-download');
-            const originalText = btn.innerHTML;
-            
-            btn.innerHTML = `<div class="spinner border-t-white w-5 h-5"></div> Memproses...`;
-
-            window.scrollTo(0, 0);
-
-            html2canvas(card, { 
-                scale: 3, 
-                backgroundColor: null, 
-                useCORS: true, 
-                allowTaint: false,
-                scrollY: -window.scrollY,
-                windowY: window.scrollY
-            }).then(canvas => {
-                canvas.toBlob(function(blob) {
-                    const namaFile = `Kartu_Donor_PMI_Story_${document.getElementById('val-nama').innerText.replace(/\s+/g, '_')}.jpg`;
-                    
-                    const url = window.URL.createObjectURL(blob);
-                    let link = document.createElement('a');
-                    link.download = namaFile;
-                    link.href = url;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    window.URL.revokeObjectURL(url);
-                    
-                    btn.innerHTML = `✅ Berhasil Diunduh!`;
-                    setTimeout(() => { btn.innerHTML = originalText; }, 3000);
-                    
-                }, 'image/jpeg', 0.95);
-            });
         }
     </script>
 </body>
