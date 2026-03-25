@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light">
-    <title>Kartu Donor Digital - PMI (Story Mode Soft)</title>
+    <title>Kartu Donor Digital - PMI (Glassmorphism Story)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
@@ -28,7 +28,7 @@
         }
 
         .geometric-bg {
-            position: absolute; inset: 0; opacity: 0.15; z-index: 0; mix-blend-mode: overlay;
+            position: absolute; inset: 0; opacity: 0.25; z-index: 0; mix-blend-mode: overlay;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='2'%3E%3Cpath d='M769 229L1037 250.9M927.1 49.1L1051.6 258.1M658.3 225.9L531.8 47.4M121.8 136.4L267.5 130.8M228.1 226.5L395.8 74.2M229 284.8L432.7 573.5M266.7 397.4L330.8 549.6M586.4 306.2L819.7 296M611 352.6L940.6 542.7M713 519.2L1122.9 286.2M900 435L922 662M1066.5 491L1142.2 436'/%3E%3Cpath d='M836 498.8L936.5 658M835.4 611L671 661M632 755.8L799.7 503.5M386 630.8L597.5 765.3M428.8 698.5L347.5 831.3'/%3E%3C/g%3E%3C/svg%3E");
             background-size: cover; background-position: center;
         }
@@ -37,17 +37,34 @@
             position: relative; z-index: 10;
             height: 100%;
             display: flex; flex-direction: column;
-            justify-content: space-between;
-            padding: 30px 24px 24px 24px;
+            justify-content: flex-start;
+            padding: 30px 20px 20px 20px;
         }
 
-        /* KOTAK DALAM - Menggunakan lengkungan (rounded) agar luwes dan tidak kaku */
-        .inner-box {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 24px; /* Lengkungan yang manis untuk isi */
-            padding: 20px;
+        /* HEADER - Tetap solid agar logo/teks terbaca jelas */
+        .header-box {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 16px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
         }
+
+        /* KOTAK KACA BESAR (GLASSMORPHISM) - Menyatukan semua isi dalam satu panel transparan */
+        .glass-panel {
+            flex-grow: 1; /* Penuhi sisa tinggi */
+            background: rgba(255, 255, 255, 0.5); /* Semi-transparan */
+            backdrop-filter: blur(12px); /* Efek Blur Latar Belakang */
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.3); /* Border tipis untuk efek kaca */
+            box-shadow: 0 10px 32px 0 rgba(31, 38, 135, 0.1);
+            display: flex; flex-direction: column;
+            justify-content: space-between;
+            padding: 24px;
+        }
+        
+        /* Area QR & Barcode kaku dibuang, biarkan Tailwind default atau rounded tipis */
         
         #loading { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px; }
         .spinner { border: 4px solid rgba(0,0,0,0.1); width: 40px; height: 40px; border-radius: 50%; border-left-color: #ef4444; animation: spin 1s linear infinite; }
@@ -62,48 +79,47 @@
     </div>
 
     <div id="card-wrapper" style="padding: 0;">
-        <div id="card-area" class="card-container hidden bg-white">
+        <div id="card-area" class="card-container hidden bg-white overflow-hidden">
             <div class="geometric-bg"></div>
             <div class="content-layer">
                 
-                <div class="inner-box flex flex-col items-center text-center !py-4">
-                    <img id="logo-pmi" src="" alt="PMI Logo" class="h-12 object-contain mb-2">
+                <div class="header-box flex flex-col items-center text-center">
+                    <img id="logo-pmi" src="" alt="PMI Logo" class="h-12 object-contain mb-2.5">
                     <div>
-                        <h2 class="font-extrabold text-slate-900 text-[16px] tracking-wider mb-0.5">KARTU PENDONOR DIGITAL</h2>
-                        <p class="text-[10px] text-slate-600 font-bold uppercase tracking-widest">UDD PMI Provinsi Maluku Utara</p>
+                        <h2 class="font-extrabold text-slate-950 text-[17px] tracking-tight leading-tight mb-0.5">KARTU PENDONOR DIGITAL</h2>
+                        <p class="text-[11px] text-slate-700 font-bold uppercase tracking-widest">UDD PMI Provinsi Maluku Utara</p>
                     </div>
                 </div>
 
-                <div class="inner-box flex flex-col items-center justify-center py-6 px-4">
-                    <div class="bg-white p-3 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-center mb-4">
-                        <canvas id="qr-canvas" class="w-24 h-24"></canvas>
+                <div class="glass-panel">
+                    
+                    <div class="flex flex-col items-center justify-center pt-2 mb-6">
+                        <div class="bg-white p-3 rounded-2xl shadow-inner border border-slate-100 flex items-center justify-center mb-5">
+                            <canvas id="qr-canvas" class="w-24 h-24"></canvas>
+                        </div>
+                        <div class="text-center">
+                            <p class="text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-1">Golongan Darah</p>
+                            <h1 class="text-7xl font-extrabold leading-none tracking-tighter" id="gol-text">
+                                <span id="gol-main"></span><span id="gol-rh" class="text-4xl ml-1"></span>
+                            </h1>
+                        </div>
                     </div>
-                    <div class="text-center">
-                        <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Golongan Darah</p>
-                        <h1 class="text-6xl font-extrabold leading-none" id="gol-text">
-                            <span id="gol-main"></span><span id="gol-rh" class="text-4xl ml-1"></span>
-                        </h1>
-                    </div>
-                </div>
 
-                <div class="flex flex-col gap-3">
-                    <div class="inner-box px-5 py-4">
-                        <table class="w-full text-[13px] border-separate" style="border-spacing: 0 5px;">
+                    <div class="border-t border-slate-300 border-dashed pt-5 mb-5 w-full">
+                        <table class="w-full text-[13.5px] border-separate" style="border-spacing: 0 6px;">
                             <tr><td class="lbl w-[28%] font-semibold align-top">Nama</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-nama" class="val w-[67%] font-extrabold break-words"></td></tr>
-                            <tr><td class="lbl w-[28%] font-semibold align-top">No. KTP</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-ktp" class="val w-[67%] font-bold break-words text-slate-700"></td></tr>
-                            <tr><td class="lbl w-[28%] font-semibold align-top">TTL</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-ttl" class="val w-[67%] font-bold break-words text-slate-700"></td></tr>
-                            <tr><td class="lbl w-[28%] font-semibold align-top">Alamat</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-alamat" class="val w-[67%] font-bold break-words text-slate-700 leading-snug"></td></tr>
-                            <tr><td class="lbl w-[28%] font-semibold align-top">Wilayah</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-wilayah" class="val w-[67%] font-bold break-words text-slate-700"></td></tr>
+                            <tr><td class="lbl w-[28%] font-semibold align-top">TTL</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-ttl" class="val w-[67%] font-bold break-words text-slate-800"></td></tr>
+                            <tr><td class="lbl w-[28%] font-semibold align-top">Alamat</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-alamat" class="val w-[67%] font-bold break-words text-slate-800 leading-snug"></td></tr>
+                            <tr><td class="lbl w-[28%] font-semibold align-top">Wilayah</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-wilayah" class="val w-[67%] font-bold break-words text-slate-800"></td></tr>
                         </table>
                     </div>
 
-                    <div class="inner-box flex flex-col items-center justify-center py-4">
-                        <canvas id="barcode-canvas" class="h-12 w-[95%]"></canvas>
-                        <p id="val-kode" class="text-[14px] font-bold text-slate-700 tracking-[0.3em] font-mono mt-1"></p>
+                    <div class="flex flex-col items-center justify-center mt-auto pt-4 border-t border-slate-300 border-dashed w-full">
+                        <canvas id="barcode-canvas" class="h-11 w-[95%]"></canvas>
+                        <p id="val-kode" class="text-[14px] font-bold text-slate-700 tracking-[0.3em] font-mono mt-1.5"></p>
                     </div>
-                </div>
 
-            </div>
+                </div> </div>
         </div>
     </div>
 
@@ -157,10 +173,10 @@
 
                         document.getElementById('gol-main').innerText = data.gol;
                         document.getElementById('gol-rh').innerText = data.rh;
-                        document.getElementById('val-ktp').innerText = data.ktp;
+                        // NO KTP DIHAPUS
                         document.getElementById('val-nama').innerText = data.nama;
-                        document.getElementById('val-ttl').innerText = data.ttl; // Menambahkan TTL
-                        document.getElementById('val-alamat').innerText = data.alamat; // Menambahkan Alamat
+                        document.getElementById('val-ttl').innerText = data.ttl;
+                        document.getElementById('val-alamat').innerText = data.alamat;
                         document.getElementById('val-wilayah').innerText = data.wilayah;
                         document.getElementById('val-kode').innerText = data.kode;
 
