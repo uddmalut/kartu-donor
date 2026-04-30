@@ -12,7 +12,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <!-- Tambahan Library Confetti untuk Animasi Hujan Kertas -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
@@ -38,26 +37,28 @@
         .spinner { border: 4px solid rgba(0,0,0,0.1); width: 40px; height: 40px; border-radius: 50%; border-left-color: #ef4444; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* --- STYLING KHUSUS LEMARI MEDALI --- */
+        /* --- STYLING LEMARI MEDALI --- */
         .medal-card { transition: all 0.3s ease; }
         .locked .medal-img { filter: grayscale(100%) opacity(30%); }
         .locked { background-color: #f8fafc; border: 1px dashed #cbd5e1; }
-        .locked .btn-unduh { display: none; }
+        .locked .btn-bagikan { display: none; }
         .unlocked .locked-badge { display: none; }
         .unlocked { background-color: #ffffff; border: 1px solid #fca5a5; box-shadow: 0 4px 10px rgba(220, 38, 38, 0.1); }
         .unlocked .medal-img { filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15)); transform: scale(1.05); }
         
-        /* Animasi Modal Pop-up */
+        /* Animasi Modal */
         .modal-pop { animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes popIn { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
+        
+        .bottom-sheet-up { animation: slideUp 0.4s ease-out forwards; }
+        @keyframes slideUp { 0% { transform: translateY(100%); } 100% { transform: translateY(0); } }
     </style>
 </head>
 <body>
 
     <!-- MODAL ANIMASI UCAPAN SELAMAT -->
     <div id="welcome-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300">
-        <div id="modal-content" class="bg-white rounded-[32px] p-8 max-w-sm w-[85%] text-center shadow-2xl relative overflow-hidden transform scale-95 opacity-0 transition-all duration-300">
-            <!-- Dekorasi Latar -->
+        <div id="welcome-content" class="bg-white rounded-[32px] p-8 max-w-sm w-[85%] text-center shadow-2xl relative overflow-hidden transform scale-95 opacity-0 transition-all duration-300">
             <div class="absolute -top-10 -right-10 w-32 h-32 bg-red-100 rounded-full blur-2xl opacity-60"></div>
             <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-yellow-100 rounded-full blur-2xl opacity-60"></div>
             
@@ -72,7 +73,7 @@
                 </div>
                 
                 <button onclick="bukaKartu()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg transition duration-300 flex items-center justify-center gap-2">
-                    Buka Kartu & Medali Saya
+                    Lanjut Buka Kartu
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
                 </button>
             </div>
@@ -129,82 +130,108 @@
             </div>
         </div>
 
-        <!-- TOMBOL UNDUH KARTU -->
-        <button id="btn-download" onclick="downloadCard()" class="hidden mb-8 w-full max-w-[300px] justify-center bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-            Simpan Kartu ke Galeri
-        </button>
+        <!-- GRUP TOMBOL AKSI -->
+        <div id="action-buttons" class="hidden flex-col w-full max-w-[320px] gap-3 mb-4">
+            <button onclick="downloadCard()" class="w-full justify-center bg-slate-800 hover:bg-slate-900 text-white font-bold py-3.5 px-6 rounded-full shadow-lg transition duration-300 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                Simpan Kartu ke Galeri
+            </button>
+            <button onclick="bukaLemari()" class="w-full justify-center bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 font-bold py-3.5 px-6 rounded-full shadow-sm transition duration-300 flex items-center gap-2">
+                🏆 Lihat Lemari Medali
+            </button>
+        </div>
+    </div> <!-- End Card Wrapper -->
 
-        <!-- AREA RUANG TROFI (MEDALI DIGITAL) -->
-        <div id="trophy-room" class="hidden w-full max-w-[400px]">
-            <div class="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-slate-100">
-                <div class="text-center mb-5 border-b border-slate-100 pb-3">
-                    <h3 class="font-bold text-slate-800 text-lg">🏆 Pencapaian Donor</h3>
-                    <p class="text-[13px] text-slate-500 mt-1">Koleksi medali pahlawan kemanusiaan</p>
+    <!-- MODAL LEMARI MEDALI (BOTTOM SHEET) -->
+    <div id="trophy-modal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300">
+        <div id="trophy-content" class="bg-white w-full max-w-md rounded-t-[32px] sm:rounded-[32px] p-6 pb-10 shadow-2xl relative max-h-[85vh] overflow-y-auto transform translate-y-full transition-transform duration-300">
+            
+            <!-- Handle untuk di-swipe/Click to close -->
+            <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-5"></div>
+            
+            <button onclick="tutupLemari()" class="absolute top-5 right-5 bg-slate-100 text-slate-500 hover:bg-slate-200 p-2 rounded-full transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+            </button>
+
+            <div class="text-center mb-6">
+                <h3 class="font-extrabold text-slate-800 text-xl">Lemari Pencapaian 🏆</h3>
+                <p class="text-[13px] text-slate-500 mt-1">Koleksi medali kepahlawanan Anda</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <!-- Medali 1 -->
+                <div id="medal-1" class="medal-card locked p-4 rounded-2xl text-center relative flex flex-col items-center">
+                    <span class="locked-badge absolute top-2 right-2 bg-slate-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Terkunci</span>
+                    <img src="https://cdn-icons-png.flaticon.com/512/179/179250.png" class="w-14 h-14 mb-2 medal-img" alt="Langkah Awal">
+                    <h4 class="text-[11px] font-bold text-slate-800 leading-tight">Langkah Awal</h4>
+                    <p class="text-[10px] text-slate-500 mt-0.5 font-medium">1x Donor</p>
+                    <button onclick="bagikanMedali('Langkah Awal', 1)" class="btn-bagikan w-full mt-3 bg-red-600 text-white hover:bg-red-700 text-[10px] font-bold py-1.5 rounded-lg transition flex justify-center items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" /></svg> Bagikan
+                    </button>
                 </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <!-- Medali 1 -->
-                    <div id="medal-1" class="medal-card locked p-4 rounded-2xl text-center relative flex flex-col items-center">
-                        <span class="locked-badge absolute top-2 right-2 bg-slate-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Terkunci</span>
-                        <img src="https://cdn-icons-png.flaticon.com/512/179/179250.png" class="w-14 h-14 mb-2 medal-img" alt="Langkah Awal">
-                        <h4 class="text-[11px] font-bold text-slate-800 leading-tight">Langkah Awal</h4>
-                        <p class="text-[10px] text-slate-500 mt-0.5 font-medium">1x Donor</p>
-                        <button onclick="unduhMedali('Langkah Awal')" class="btn-unduh w-full mt-3 bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 text-[10px] font-bold py-1.5 rounded-lg transition">⬇ Unduh</button>
-                    </div>
-                    <!-- Medali 5 -->
-                    <div id="medal-5" class="medal-card locked p-4 rounded-2xl text-center relative flex flex-col items-center">
-                        <span class="locked-badge absolute top-2 right-2 bg-slate-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Terkunci</span>
-                        <img src="https://cdn-icons-png.flaticon.com/512/179/179251.png" class="w-14 h-14 mb-2 medal-img" alt="Ksatria Kemanusiaan">
-                        <h4 class="text-[11px] font-bold text-slate-800 leading-tight">Ksatria Kemanusiaan</h4>
-                        <p class="text-[10px] text-slate-500 mt-0.5 font-medium">5x Donor</p>
-                        <button onclick="unduhMedali('Ksatria Kemanusiaan')" class="btn-unduh w-full mt-3 bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 text-[10px] font-bold py-1.5 rounded-lg transition">⬇ Unduh</button>
-                    </div>
-                    <!-- Medali 10 -->
-                    <div id="medal-10" class="medal-card locked p-4 rounded-2xl text-center relative flex flex-col items-center">
-                        <span class="locked-badge absolute top-2 right-2 bg-slate-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Terkunci</span>
-                        <img src="https://cdn-icons-png.flaticon.com/512/179/179249.png" class="w-14 h-14 mb-2 medal-img" alt="Duta Pakesang">
-                        <h4 class="text-[11px] font-bold text-slate-800 leading-tight">Duta Pakesang</h4>
-                        <p class="text-[10px] text-slate-500 mt-0.5 font-medium">10x Donor</p>
-                        <button onclick="unduhMedali('Duta Pakesang')" class="btn-unduh w-full mt-3 bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 text-[10px] font-bold py-1.5 rounded-lg transition">⬇ Unduh</button>
-                    </div>
-                    <!-- Medali 25 -->
-                    <div id="medal-25" class="medal-card locked p-4 rounded-2xl text-center relative flex flex-col items-center">
-                        <span class="locked-badge absolute top-2 right-2 bg-slate-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Terkunci</span>
-                        <img src="https://cdn-icons-png.flaticon.com/512/2904/2904973.png" class="w-14 h-14 mb-2 medal-img" alt="Pahlawan Kehidupan">
-                        <h4 class="text-[11px] font-bold text-slate-800 leading-tight">Pahlawan Kehidupan</h4>
-                        <p class="text-[10px] text-slate-500 mt-0.5 font-medium">25x Donor</p>
-                        <button onclick="unduhMedali('Pahlawan Kehidupan')" class="btn-unduh w-full mt-3 bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 text-[10px] font-bold py-1.5 rounded-lg transition">⬇ Unduh</button>
-                    </div>
-                    <!-- Medali 50 -->
-                    <div id="medal-50" class="medal-card locked p-4 rounded-2xl text-center relative flex flex-col items-center">
-                        <span class="locked-badge absolute top-2 right-2 bg-slate-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Terkunci</span>
-                        <img src="https://cdn-icons-png.flaticon.com/512/5906/5906100.png" class="w-14 h-14 mb-2 medal-img" alt="Penyelamat Sejati">
-                        <h4 class="text-[11px] font-bold text-slate-800 leading-tight">Penyelamat Sejati</h4>
-                        <p class="text-[10px] text-slate-500 mt-0.5 font-medium">50x Donor</p>
-                        <button onclick="unduhMedali('Penyelamat Sejati')" class="btn-unduh w-full mt-3 bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 text-[10px] font-bold py-1.5 rounded-lg transition">⬇ Unduh</button>
-                    </div>
-                    <!-- Medali 75 -->
-                    <div id="medal-75" class="medal-card locked p-4 rounded-2xl text-center relative flex flex-col items-center">
-                        <span class="locked-badge absolute top-2 right-2 bg-slate-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Terkunci</span>
-                        <img src="https://cdn-icons-png.flaticon.com/512/3176/3176294.png" class="w-14 h-14 mb-2 medal-img" alt="Inspirator Kehidupan">
-                        <h4 class="text-[11px] font-bold text-slate-800 leading-tight">Inspirator Kehidupan</h4>
-                        <p class="text-[10px] text-slate-500 mt-0.5 font-medium">75x Donor</p>
-                        <button onclick="unduhMedali('Inspirator Kehidupan')" class="btn-unduh w-full mt-3 bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 text-[10px] font-bold py-1.5 rounded-lg transition">⬇ Unduh</button>
-                    </div>
-                    
-                    <!-- Medali 100 (Lebar Penuh / Ultimate) -->
-                    <div id="medal-100" class="col-span-2 medal-card locked p-5 rounded-2xl text-center relative flex flex-col items-center bg-gradient-to-b from-slate-50 to-slate-100">
-                        <span class="locked-badge absolute top-3 right-3 bg-slate-400 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider">Terkunci</span>
-                        <img src="https://cdn-icons-png.flaticon.com/512/2850/2850785.png" class="w-20 h-20 mb-3 medal-img drop-shadow-md" alt="Legenda Kemanusiaan">
-                        <h4 class="text-[14px] font-extrabold text-slate-800 leading-tight uppercase tracking-wide">Legenda Kemanusiaan</h4>
-                        <p class="text-[12px] text-slate-600 mt-1 font-bold">🎉 100x Donor Darah 🎉</p>
-                        <button onclick="unduhMedali('Legenda Kemanusiaan')" class="btn-unduh w-[60%] mt-4 bg-red-600 text-white hover:bg-red-700 shadow-md text-[12px] font-bold py-2 rounded-xl transition">⬇ Unduh Penghargaan</button>
-                    </div>
+                <!-- Medali 5 -->
+                <div id="medal-5" class="medal-card locked p-4 rounded-2xl text-center relative flex flex-col items-center">
+                    <span class="locked-badge absolute top-2 right-2 bg-slate-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Terkunci</span>
+                    <img src="https://cdn-icons-png.flaticon.com/512/179/179251.png" class="w-14 h-14 mb-2 medal-img" alt="Ksatria Kemanusiaan">
+                    <h4 class="text-[11px] font-bold text-slate-800 leading-tight">Ksatria Kemanusiaan</h4>
+                    <p class="text-[10px] text-slate-500 mt-0.5 font-medium">5x Donor</p>
+                    <button onclick="bagikanMedali('Ksatria Kemanusiaan', 5)" class="btn-bagikan w-full mt-3 bg-red-600 text-white hover:bg-red-700 text-[10px] font-bold py-1.5 rounded-lg transition flex justify-center items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" /></svg> Bagikan
+                    </button>
+                </div>
+                <!-- Medali 10 -->
+                <div id="medal-10" class="medal-card locked p-4 rounded-2xl text-center relative flex flex-col items-center">
+                    <span class="locked-badge absolute top-2 right-2 bg-slate-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Terkunci</span>
+                    <img src="https://cdn-icons-png.flaticon.com/512/179/179249.png" class="w-14 h-14 mb-2 medal-img" alt="Duta Pakesang">
+                    <h4 class="text-[11px] font-bold text-slate-800 leading-tight">Duta Pakesang</h4>
+                    <p class="text-[10px] text-slate-500 mt-0.5 font-medium">10x Donor</p>
+                    <button onclick="bagikanMedali('Duta Pakesang', 10)" class="btn-bagikan w-full mt-3 bg-red-600 text-white hover:bg-red-700 text-[10px] font-bold py-1.5 rounded-lg transition flex justify-center items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" /></svg> Bagikan
+                    </button>
+                </div>
+                <!-- Medali 25 -->
+                <div id="medal-25" class="medal-card locked p-4 rounded-2xl text-center relative flex flex-col items-center">
+                    <span class="locked-badge absolute top-2 right-2 bg-slate-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Terkunci</span>
+                    <img src="https://cdn-icons-png.flaticon.com/512/2904/2904973.png" class="w-14 h-14 mb-2 medal-img" alt="Pahlawan Kehidupan">
+                    <h4 class="text-[11px] font-bold text-slate-800 leading-tight">Pahlawan Kehidupan</h4>
+                    <p class="text-[10px] text-slate-500 mt-0.5 font-medium">25x Donor</p>
+                    <button onclick="bagikanMedali('Pahlawan Kehidupan', 25)" class="btn-bagikan w-full mt-3 bg-red-600 text-white hover:bg-red-700 text-[10px] font-bold py-1.5 rounded-lg transition flex justify-center items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" /></svg> Bagikan
+                    </button>
+                </div>
+                <!-- Medali 50 -->
+                <div id="medal-50" class="medal-card locked p-4 rounded-2xl text-center relative flex flex-col items-center">
+                    <span class="locked-badge absolute top-2 right-2 bg-slate-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Terkunci</span>
+                    <img src="https://cdn-icons-png.flaticon.com/512/5906/5906100.png" class="w-14 h-14 mb-2 medal-img" alt="Penyelamat Sejati">
+                    <h4 class="text-[11px] font-bold text-slate-800 leading-tight">Penyelamat Sejati</h4>
+                    <p class="text-[10px] text-slate-500 mt-0.5 font-medium">50x Donor</p>
+                    <button onclick="bagikanMedali('Penyelamat Sejati', 50)" class="btn-bagikan w-full mt-3 bg-red-600 text-white hover:bg-red-700 text-[10px] font-bold py-1.5 rounded-lg transition flex justify-center items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" /></svg> Bagikan
+                    </button>
+                </div>
+                <!-- Medali 75 -->
+                <div id="medal-75" class="medal-card locked p-4 rounded-2xl text-center relative flex flex-col items-center">
+                    <span class="locked-badge absolute top-2 right-2 bg-slate-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Terkunci</span>
+                    <img src="https://cdn-icons-png.flaticon.com/512/3176/3176294.png" class="w-14 h-14 mb-2 medal-img" alt="Inspirator Kehidupan">
+                    <h4 class="text-[11px] font-bold text-slate-800 leading-tight">Inspirator Kehidupan</h4>
+                    <p class="text-[10px] text-slate-500 mt-0.5 font-medium">75x Donor</p>
+                    <button onclick="bagikanMedali('Inspirator Kehidupan', 75)" class="btn-bagikan w-full mt-3 bg-red-600 text-white hover:bg-red-700 text-[10px] font-bold py-1.5 rounded-lg transition flex justify-center items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" /></svg> Bagikan
+                    </button>
+                </div>
+                <!-- Medali 100 -->
+                <div id="medal-100" class="col-span-2 medal-card locked p-5 rounded-2xl text-center relative flex flex-col items-center bg-gradient-to-b from-slate-50 to-slate-100">
+                    <span class="locked-badge absolute top-3 right-3 bg-slate-400 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider">Terkunci</span>
+                    <img src="https://cdn-icons-png.flaticon.com/512/2850/2850785.png" class="w-20 h-20 mb-3 medal-img drop-shadow-md" alt="Legenda Kemanusiaan">
+                    <h4 class="text-[14px] font-extrabold text-slate-800 leading-tight uppercase tracking-wide">Legenda Kemanusiaan</h4>
+                    <p class="text-[12px] text-slate-600 mt-1 font-bold">🎉 100x Donor Darah 🎉</p>
+                    <button onclick="bagikanMedali('Legenda Kemanusiaan', 100)" class="btn-bagikan w-[60%] mt-4 bg-red-600 text-white hover:bg-red-700 shadow-md text-[12px] font-bold py-2 rounded-xl transition flex justify-center items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" /></svg> Bagikan ke Sosmed
+                    </button>
                 </div>
             </div>
         </div>
-    </div> <!-- End Card Wrapper -->
+    </div>
 
     <script>
         // MASUKKAN URL DEPLOYMENT GOOGLE APPS SCRIPT ANDA DI SINI
@@ -278,44 +305,26 @@
                             lineColor: "#0f172a", width: 2.5, height: 40, margin: 0
                         });
 
-                        // ----------------------------------------------------
-                        // LOGIKA MUNCULNYA MODAL ATAU LANGSUNG KARTU
-                        // ----------------------------------------------------
-                        document.getElementById('loading').style.display = 'none'; // Hilangkan loading
+                        document.getElementById('loading').style.display = 'none'; 
                         
                         if (totalDarah > 0) {
-                            // Ambil nama panggilan (kata pertama)
                             let namaPanggilan = data.nama.split(' ')[0];
                             document.getElementById('modal-nama').innerText = namaPanggilan;
                             document.getElementById('modal-jum').innerText = totalDarah;
                             
-                            // Tampilkan Modal
                             const modal = document.getElementById('welcome-modal');
-                            const content = document.getElementById('modal-content');
+                            const content = document.getElementById('welcome-content');
                             modal.classList.remove('hidden');
                             
-                            // Efek Pop-in setelah sedikit delay
                             setTimeout(() => {
                                 content.classList.remove('scale-95', 'opacity-0');
                                 content.classList.add('scale-100', 'opacity-100', 'modal-pop');
-                                
-                                // Ledakan Confetti dari tengah bawah
-                                confetti({
-                                    particleCount: 150,
-                                    spread: 80,
-                                    origin: { y: 0.7 },
-                                    colors: ['#ef4444', '#facc15', '#3b82f6', '#10b981']
-                                });
+                                confetti({ particleCount: 150, spread: 80, origin: { y: 0.7 }, colors: ['#ef4444', '#facc15', '#3b82f6', '#10b981'] });
                             }, 50);
-
                         } else {
-                            // Jika belum pernah donor, langsung tampilkan kartu
                             tampilkanSemuaKartu();
                         }
                         
-                        // ==========================================
-                        // PROSES MEMBUKA KUNCI MEDALI DIGITAL (7 TIER)
-                        // ==========================================
                         if(totalDarah >= 1) unlockMedal('medal-1');
                         if(totalDarah >= 5) unlockMedal('medal-5');
                         if(totalDarah >= 10) unlockMedal('medal-10');
@@ -339,28 +348,51 @@
             document.getElementById('loading').innerHTML = `<p class='text-slate-500 font-bold'>Data pendonor tidak ditemukan.</p>`;
         }
 
-        // --- FUNGSI BUKA KARTU DARI MODAL ---
+        // --- MANAJEMEN TAMPILAN KARTU ---
         function bukaKartu() {
             const modal = document.getElementById('welcome-modal');
-            const content = document.getElementById('modal-content');
+            const content = document.getElementById('welcome-content');
             
-            // Animasi menutup modal (Fade out & shrink)
             content.classList.remove('scale-100', 'opacity-100');
             content.classList.add('scale-95', 'opacity-0');
             modal.classList.add('opacity-0');
             
             setTimeout(() => {
                 modal.classList.add('hidden');
-                tampilkanSemuaKartu(); // Tampilkan kartu setelah modal hilang
-            }, 300); // Waktu transisi 0.3s
+                tampilkanSemuaKartu(); 
+            }, 300);
         }
 
-        // --- FUNGSI MENAMPILKAN KARTU & LEMARI ---
         function tampilkanSemuaKartu() {
             document.getElementById('card-area').classList.remove('hidden');
-            document.getElementById('btn-download').classList.remove('hidden');
-            document.getElementById('btn-download').classList.add('flex');
-            document.getElementById('trophy-room').classList.remove('hidden'); 
+            // Menampilkan tombol-tombol aksi (Download Kartu & Buka Lemari)
+            document.getElementById('action-buttons').classList.remove('hidden');
+            document.getElementById('action-buttons').classList.add('flex');
+        }
+
+        // --- MANAJEMEN MODAL LEMARI MEDALI ---
+        function bukaLemari() {
+            const modal = document.getElementById('trophy-modal');
+            const content = document.getElementById('trophy-content');
+            modal.classList.remove('hidden');
+            
+            // Sedikit delay agar transisi mulus
+            setTimeout(() => {
+                content.classList.add('bottom-sheet-up');
+                content.classList.remove('translate-y-full');
+            }, 10);
+        }
+
+        function tutupLemari() {
+            const modal = document.getElementById('trophy-modal');
+            const content = document.getElementById('trophy-content');
+            
+            content.classList.remove('bottom-sheet-up');
+            content.classList.add('translate-y-full');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
         }
 
         function unlockMedal(medalId) {
@@ -371,16 +403,36 @@
             }
         }
 
-        function unduhMedali(namaMedali) {
-            alert("Sistem akan mengunduh aset medali: " + namaMedali + "!\n(Fitur download gambar medali segera hadir)");
+        // --- FUNGSI SHARE KE SOSMED (Web Share API) ---
+        function bagikanMedali(namaMedali, pencapaian) {
+            const shareTitle = 'Pencapaian Donor Darah PMI';
+            const shareText = `Alhamdulillah! Saya berhasil meraih medali "${namaMedali}" karena telah berdonor darah sebanyak ${pencapaian} kali di UDD PMI Provinsi Maluku Utara. Yuk ikut donor darah! 🩸 Pahlawan Kemanusiaan`;
+            
+            // Cek apakah HP/Browser mendukung fitur Share asli
+            if (navigator.share) {
+                navigator.share({
+                    title: shareTitle,
+                    text: shareText,
+                    // Opsional: url: window.location.href (Jika ingin share link kartu juga)
+                }).then(() => {
+                    console.log('Berhasil dibagikan');
+                }).catch((error) => {
+                    console.error('Error membagikan:', error);
+                });
+            } else {
+                // Fallback jika dibuka di Laptop/PC lama
+                alert(`Fitur Share native tidak didukung browser ini.\n\nSalin teks berikut untuk dibagikan:\n\n${shareText}`);
+            }
         }
 
+        // --- FUNGSI DOWNLOAD KARTU ---
         function downloadCard() {
             const card = document.getElementById('card-area');
-            const btn = document.getElementById('btn-download');
-            const originalText = btn.innerHTML;
+            const actionButtons = document.getElementById('action-buttons');
+            const originalHTML = actionButtons.innerHTML;
             
-            btn.innerHTML = `<div class="spinner border-t-white w-5 h-5"></div> Memproses...`;
+            // Ubah tombol sementar waktu loading
+            actionButtons.innerHTML = `<div class="w-full flex justify-center bg-slate-800 text-white font-bold py-3.5 px-6 rounded-full opacity-70"><div class="spinner border-t-white w-5 h-5 mr-2"></div> Memproses...</div>`;
             window.scrollTo(0, 0); 
 
             html2canvas(card, { 
@@ -403,8 +455,8 @@
                     document.body.removeChild(link);
                     window.URL.revokeObjectURL(url);
                     
-                    btn.innerHTML = `✅ Berhasil Diunduh!`;
-                    setTimeout(() => { btn.innerHTML = originalText; }, 3000);
+                    actionButtons.innerHTML = `<div class="w-full flex justify-center bg-green-600 text-white font-bold py-3.5 px-6 rounded-full">✅ Berhasil Diunduh!</div>`;
+                    setTimeout(() => { actionButtons.innerHTML = originalHTML; }, 3000);
                     
                 }, 'image/jpeg', 0.95);
             });
