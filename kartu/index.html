@@ -135,18 +135,24 @@
     </div>
 
     <!-- MODAL LEMARI MEDALI (BOTTOM SHEET) -->
-    <div id="trophy-modal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300">
-        <div id="trophy-content" class="bg-white w-full max-w-md rounded-t-[32px] sm:rounded-[32px] p-6 pb-10 shadow-2xl relative max-h-[85vh] overflow-y-auto transform translate-y-full transition-transform duration-300 ease-out"><div id="trophy-content" class="bg-white w-full max-w-md rounded-t-[32px] sm:rounded-[32px] p-6 pb-10 shadow-2xl relative max-h-[85vh] overflow-y-auto transform translate-y-full transition-transform duration-300 ease-out">
+    <!-- MODAL LEMARI MEDALI (POP-UP TENGAH LANGSUNG) -->
+    <div id="trophy-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 backdrop-blur-sm transition-opacity duration-300 opacity-0">
+        <!-- Perhatikan: Tidak ada lagi translate-y, diganti dengan efek scale & opacity -->
+        <div id="trophy-content" class="bg-white w-[90%] max-w-md rounded-[32px] p-6 pb-8 shadow-2xl relative max-h-[85vh] overflow-y-auto transform scale-95 opacity-0 transition-all duration-300 ease-out">
             
-            <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-5"></div>
-            <button onclick="tutupLemari()" class="absolute top-5 right-5 bg-slate-100 text-slate-500 hover:bg-slate-200 p-2 rounded-full transition"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></button>
+            <!-- Tombol Silang (Close) -->
+            <button onclick="tutupLemari()" class="absolute top-5 right-5 bg-slate-100 text-slate-500 hover:bg-slate-200 p-2 rounded-full transition z-10">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
+            </button>
 
-            <div class="text-center mb-6">
+            <div class="text-center mb-6 mt-2">
                 <h3 class="font-extrabold text-slate-800 text-xl">Lemari Pencapaian 🏆</h3>
                 <p class="text-[13px] text-slate-500 mt-1">Koleksi medali kepahlawanan Anda</p>
             </div>
 
+            <!-- ISI GRID MEDALI TETAP SAMA SEPERTI SEBELUMNYA -->
             <div class="grid grid-cols-2 gap-4">
+                <!-- Copy isi medali 1 sampai 100 Kakak di sini... -->
                 <!-- MEDALI 1x -->
                 <div id="medal-1" class="medal-card locked p-4 rounded-2xl text-center relative flex flex-col items-center">
                     <span class="locked-badge absolute top-2 right-2 bg-slate-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Terkunci</span>
@@ -357,17 +363,14 @@ function bukaLemari() {
             const modal = document.getElementById('trophy-modal');
             const content = document.getElementById('trophy-content');
             
-            // 1. Munculkan elemen ke DOM dulu
             modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Kunci scroll layar belakang
             
-            // 2. Kunci scroll layar belakang agar tidak bisa digeser-geser
-            document.body.style.overflow = 'hidden';
-            
-            // 3. Jeda 50ms agar browser HP sempat me-render layout sebelum animasi ditarik
+            // Pop-up muncul langsung ke tengah
             setTimeout(() => {
-                modal.classList.remove('opacity-0'); // Layar gelap memudar masuk
-                content.classList.remove('translate-y-full'); 
-                content.classList.add('translate-y-0'); // Lemari naik ke atas
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
             }, 50);
         }
 
@@ -375,15 +378,13 @@ function bukaLemari() {
             const modal = document.getElementById('trophy-modal');
             const content = document.getElementById('trophy-content');
             
-            // 1. Turunkan lemari dan pudarkan layar gelap
-            content.classList.remove('translate-y-0');
-            content.classList.add('translate-y-full');
+            // Efek mengecil dan pudar sebelum hilang
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
             modal.classList.add('opacity-0');
             
-            // 2. Buka kembali scroll layar belakang
-            document.body.style.overflow = '';
+            document.body.style.overflow = ''; // Buka kembali scroll
             
-            // 3. Sembunyikan elemen setelah animasi selesai (300ms)
             setTimeout(() => {
                 modal.classList.add('hidden');
             }, 300);
@@ -483,38 +484,37 @@ function bukaLemari() {
                     ]);
 
                    // 4. Gambarkan Logo PMI di atas
-                    // LOGO DIKECILKAN DARI 350 MENJADI 240
-                    const logoWidth = 240; 
+                    // LOGO DIPERKECIL MENJADI 180px DAN NAIK KE Y=180
+                    const logoWidth = 180; 
                     const logoHeight = (imgLogo.height / imgLogo.width) * logoWidth;
-                    // Posisi Y diturunkan sedikit ke 220 agar proporsional
-                    ctx.drawImage(imgLogo, 540 - (logoWidth / 2), 220, logoWidth, logoHeight);
+                    // Posisi Y = 180 (mendekati batas atas panel kaca)
+                    ctx.drawImage(imgLogo, 540 - (logoWidth / 2), 180, logoWidth, logoHeight);
 
-                    // 5. Teks Header (Dinaikkan sedikit agar tidak terlalu jauh dari logo)
+                    // 5. Teks Header (Dinaikkan agar mengikuti logo)
                     ctx.fillStyle = '#dc2626'; // red-600
                     ctx.font = '900 50px Arial, sans-serif';
                     ctx.textAlign = 'center';
-                    ctx.fillText('PENGHARGAAN PENCAPAIAN', 540, 360);
+                    ctx.fillText('PENGHARGAAN PENCAPAIAN', 540, 330);
                     
                     ctx.fillStyle = '#64748b'; // slate-500
                     ctx.font = 'bold 30px Arial, sans-serif';
-                    ctx.fillText('PAHLAWAN KEMANUSIAAN', 540, 410);
+                    ctx.fillText('PAHLAWAN KEMANUSIAAN', 540, 380);
 
-                    // 6. Muat dan Gambar Medali
-                    // Posisi cahaya glow
-                    const glow = ctx.createRadialGradient(540, 710, 50, 540, 710, 300);
+                    // 6. Muat dan Gambar Medali (Dinaikkan sedikit)
+                    const glow = ctx.createRadialGradient(540, 680, 50, 540, 680, 300);
                     glow.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
                     glow.addColorStop(1, 'rgba(255, 255, 255, 0)');
                     ctx.fillStyle = glow;
                     ctx.beginPath();
-                    ctx.arc(540, 710, 300, 0, Math.PI * 2);
+                    ctx.arc(540, 680, 300, 0, Math.PI * 2);
                     ctx.fill();
 
                     ctx.shadowColor = 'rgba(0, 0, 0, 0.25)';
                     ctx.shadowBlur = 40;
                     ctx.shadowOffsetY = 25;
 
-                    // Gambar Medalinya kita sesuaikan posisinya
-                    ctx.drawImage(imgMedal, 310, 480, 460, 460);
+                    // Gambar Medalinya dinaikkan posisinya ke Y=450
+                    ctx.drawImage(imgMedal, 310, 450, 460, 460);
 
                     ctx.shadowColor = 'transparent';
 
