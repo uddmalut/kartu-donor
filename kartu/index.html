@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-   <meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <meta name="color-scheme" content="light">
+    <title>Kartu Donor & Medali Digital - PMI</title>
     
-    <title>Kartu Donor Digital - PMI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     
@@ -16,7 +15,7 @@
     
     <style>
         :root { color-scheme: light; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; padding-bottom: 40px; }
         
         .card-container {
             width: 100%; max-width: 400px; border-radius: 28px; position: relative;
@@ -36,17 +35,27 @@
         #loading { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px; }
         .spinner { border: 4px solid rgba(0,0,0,0.1); width: 40px; height: 40px; border-radius: 50%; border-left-color: #ef4444; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* --- STYLING KHUSUS LEMARI MEDALI --- */
+        .medal-card { transition: all 0.3s ease; }
+        .locked .medal-img { filter: grayscale(100%) opacity(30%); }
+        .locked { background-color: #f8fafc; border: 1px dashed #cbd5e1; }
+        .locked .btn-unduh { display: none; }
+        .unlocked .locked-badge { display: none; }
+        .unlocked { background-color: #ffffff; border: 1px solid #fca5a5; box-shadow: 0 4px 10px rgba(220, 38, 38, 0.1); }
+        .unlocked .medal-img { filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15)); transform: scale(1.05); }
     </style>
 </head>
 <body>
 
     <div id="loading">
         <div class="spinner"></div>
-        <p class="mt-4 text-slate-500 font-semibold animate-pulse">Menyiapkan Kartu Digital...</p>
+        <p class="mt-4 text-slate-500 font-semibold animate-pulse">Menyiapkan Data & Medali...</p>
     </div>
 
-    <div id="card-wrapper" style="padding: 0;">
-        <div id="card-area" class="card-container hidden bg-white">
+    <!-- AREA KARTU DIGITAL -->
+    <div id="card-wrapper" class="w-full max-w-[400px] p-0 flex flex-col items-center">
+        <div id="card-area" class="card-container hidden bg-white mb-6">
             <div class="geometric-bg"></div>
             <div class="content-layer">
                 
@@ -76,7 +85,9 @@
                         <tr><td class="lbl w-[30%] font-semibold align-top">Nama</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-nama" class="val w-[65%] font-bold break-words"></td></tr>
                         <tr><td class="lbl w-[30%] font-semibold align-top">TTL</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-ttl" class="val w-[65%] font-bold break-words"></td></tr>
                         <tr><td class="lbl w-[30%] font-semibold align-top">Alamat</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-alamat" class="val w-[65%] font-bold break-words leading-snug"></td></tr>
-                        <tr><td class="lbl w-[30%] font-semibold align-top">Wilayah</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-wilayah" class="val w-[65%] font-bold break-words"></td></tr>
+                        <!-- Tambahan Baris Total Donor & Jadwal -->
+                        <tr><td class="lbl w-[30%] font-semibold align-top mt-2">Total Donor</td><td class="colon w-[5%] font-semibold align-top mt-2">:</td><td id="val-jum" class="val w-[65%] font-bold text-red-600 break-words mt-2"></td></tr>
+                        <tr><td class="lbl w-[30%] font-semibold align-top">Kembali</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-kembali" class="val w-[65%] font-bold break-words"></td></tr>
                     </table>
                 </div>
 
@@ -86,12 +97,61 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <button id="btn-download" onclick="downloadCard()" class="hidden mt-6 bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 items-center gap-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
-        Simpan ke Galeri (JPG)
-    </button>
+        <!-- TOMBOL UNDUH KARTU -->
+        <button id="btn-download" onclick="downloadCard()" class="hidden mb-8 w-full max-w-[300px] justify-center bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-8 rounded-full shadow-lg transition duration-300 items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+            Simpan Kartu ke Galeri
+        </button>
+
+        <!-- AREA RUANG TROFI (MEDALI DIGITAL) -->
+        <div id="trophy-room" class="hidden w-full max-w-[400px]">
+            <div class="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-slate-100">
+                <div class="text-center mb-5 border-b border-slate-100 pb-3">
+                    <h3 class="font-bold text-slate-800 text-lg">🏆 Pencapaian Donor</h3>
+                    <p class="text-[13px] text-slate-500 mt-1">Koleksi medali Pahlawan Kemanusiaan</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- Medali 1 -->
+                    <div id="medal-1" class="medal-card locked p-4 rounded-2xl text-center relative flex flex-col items-center">
+                        <span class="locked-badge absolute top-2 right-2 bg-slate-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Terkunci</span>
+                        <img src="https://cdn-icons-png.flaticon.com/512/179/179250.png" class="w-14 h-14 mb-2 medal-img" alt="Langkah Awal">
+                        <h4 class="text-[11px] font-bold text-slate-800 leading-tight">Langkah Awal</h4>
+                        <p class="text-[10px] text-slate-500 mt-0.5 font-medium">1x Donor</p>
+                        <button onclick="unduhMedali('Langkah Awal')" class="btn-unduh w-full mt-3 bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 text-[10px] font-bold py-1.5 rounded-lg transition">⬇ Unduh</button>
+                    </div>
+
+                    <!-- Medali 5 -->
+                    <div id="medal-5" class="medal-card locked p-4 rounded-2xl text-center relative flex flex-col items-center">
+                        <span class="locked-badge absolute top-2 right-2 bg-slate-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Terkunci</span>
+                        <img src="https://cdn-icons-png.flaticon.com/512/179/179251.png" class="w-14 h-14 mb-2 medal-img" alt="Ksatria Kemanusiaan">
+                        <h4 class="text-[11px] font-bold text-slate-800 leading-tight">Ksatria Kemanusiaan</h4>
+                        <p class="text-[10px] text-slate-500 mt-0.5 font-medium">5x Donor</p>
+                        <button onclick="unduhMedali('Ksatria Kemanusiaan')" class="btn-unduh w-full mt-3 bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 text-[10px] font-bold py-1.5 rounded-lg transition">⬇ Unduh</button>
+                    </div>
+
+                    <!-- Medali 10 -->
+                    <div id="medal-10" class="medal-card locked p-4 rounded-2xl text-center relative flex flex-col items-center">
+                        <span class="locked-badge absolute top-2 right-2 bg-slate-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Terkunci</span>
+                        <img src="https://cdn-icons-png.flaticon.com/512/179/179249.png" class="w-14 h-14 mb-2 medal-img" alt="Duta Pakesang">
+                        <h4 class="text-[11px] font-bold text-slate-800 leading-tight">Duta Pakesang</h4>
+                        <p class="text-[10px] text-slate-500 mt-0.5 font-medium">10x Donor</p>
+                        <button onclick="unduhMedali('Duta Pakesang')" class="btn-unduh w-full mt-3 bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 text-[10px] font-bold py-1.5 rounded-lg transition">⬇ Unduh</button>
+                    </div>
+
+                    <!-- Medali 25 -->
+                    <div id="medal-25" class="medal-card locked p-4 rounded-2xl text-center relative flex flex-col items-center">
+                        <span class="locked-badge absolute top-2 right-2 bg-slate-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Terkunci</span>
+                        <img src="https://cdn-icons-png.flaticon.com/512/2904/2904973.png" class="w-14 h-14 mb-2 medal-img" alt="Pahlawan Kehidupan">
+                        <h4 class="text-[11px] font-bold text-slate-800 leading-tight">Pahlawan Kehidupan</h4>
+                        <p class="text-[10px] text-slate-500 mt-0.5 font-medium">25x Donor</p>
+                        <button onclick="unduhMedali('Pahlawan Kehidupan')" class="btn-unduh w-full mt-3 bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 text-[10px] font-bold py-1.5 rounded-lg transition">⬇ Unduh</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> <!-- End Card Wrapper -->
 
     <script>
         // MASUKKAN URL DEPLOYMENT GOOGLE APPS SCRIPT ANDA DI SINI
@@ -114,7 +174,6 @@
         }
         muatLogoPMI();
 
-       // PENGATURAN WARNA FINAL (Sudah disesuaikan agar tulisan golongan darah kontras di atas kotak putih)
         const colors = {
             'A':  { bg: 'from-yellow-300 to-amber-500', border: '#d97706', bloodTxt: 'text-amber-600', bodyTxt: 'text-slate-900', labelTxt: 'text-slate-700' }, 
             'B':  { bg: 'from-pink-400 to-rose-500', border: '#be185d', bloodTxt: 'text-rose-600',  bodyTxt: 'text-white', labelTxt: 'text-pink-100' }, 
@@ -134,6 +193,7 @@
                         let golRaw = (data.gol || '-').toUpperCase();
                         let theme = colors[golRaw] || colors['-'];
                         
+                        // Isi Data Kartu
                         let card = document.getElementById('card-area');
                         card.classList.add('bg-gradient-to-br', ...theme.bg.split(' '));
                         card.style.borderColor = theme.border;
@@ -149,8 +209,12 @@
                         document.getElementById('val-nama').innerText = data.nama;
                         document.getElementById('val-ttl').innerText = data.ttl;
                         document.getElementById('val-alamat').innerText = data.alamat;
-                        document.getElementById('val-wilayah').innerText = data.wilayah;
                         document.getElementById('val-kode').innerText = data.kode;
+                        
+                        // Menampilkan Jumlah Donor & Jadwal Kembali
+                        let totalDarah = parseInt(data.jumDonor) || 0; // Mengambil dari API
+                        document.getElementById('val-jum').innerText = totalDarah > 0 ? totalDarah + " Kali" : "Belum ada data";
+                        document.getElementById('val-kembali').innerText = data.jadwal || "-";
 
                         new QRious({
                             element: document.getElementById('qr-canvas'),
@@ -167,6 +231,17 @@
                         card.classList.remove('hidden');
                         document.getElementById('btn-download').classList.remove('hidden');
                         document.getElementById('btn-download').classList.add('flex');
+                        
+                        // ==========================================
+                        // PROSES MEMBUKA KUNCI MEDALI DIGITAL
+                        // ==========================================
+                        document.getElementById('trophy-room').classList.remove('hidden'); // Munculkan Lemari
+                        
+                        if(totalDarah >= 1) unlockMedal('medal-1');
+                        if(totalDarah >= 5) unlockMedal('medal-5');
+                        if(totalDarah >= 10) unlockMedal('medal-10');
+                        if(totalDarah >= 25) unlockMedal('medal-25');
+                        
                     } else {
                         document.getElementById('loading').innerHTML = `<p class='text-red-500 font-bold text-center mt-5 text-xl'>⚠️ ${data.pesan}</p>`;
                     }
@@ -178,7 +253,22 @@
             document.getElementById('loading').innerHTML = `<p class='text-slate-500 font-bold'>Data pendonor tidak ditemukan.</p>`;
         }
 
-        // FUNGSI DOWNLOAD FINAL (Mengakali Pergeseran Posisi di iOS Safari)
+        // Fungsi Buka Kunci
+        function unlockMedal(medalId) {
+            const el = document.getElementById(medalId);
+            if(el) {
+                el.classList.remove('locked');
+                el.classList.add('unlocked');
+            }
+        }
+
+        // Fungsi Simulasi Unduh Medali
+        function unduhMedali(namaMedali) {
+            // Nanti ini bisa dihubungkan untuk men-download gambar sertifikat / medali khusus
+            alert("Sistem akan mengunduh aset medali: " + namaMedali + "!\n(Fitur download gambar medali segera hadir)");
+        }
+
+        // FUNGSI DOWNLOAD KARTU (Mengakali Pergeseran Posisi di iOS Safari)
         function downloadCard() {
             const card = document.getElementById('card-area');
             const btn = document.getElementById('btn-download');
@@ -186,15 +276,14 @@
             
             btn.innerHTML = `<div class="spinner border-t-white w-5 h-5"></div> Memproses...`;
 
-            // Trik khusus: Paksa gulir ke atas, lalu gunakan scrollY: -window.scrollY
-            window.scrollTo(0, 0);
+            window.scrollTo(0, 0); // Kunci posisi
 
             html2canvas(card, { 
                 scale: 3, 
                 backgroundColor: null, 
                 useCORS: true, 
                 allowTaint: false,
-                scrollY: -window.scrollY, // Ini akan mengunci perhitungan posisi gambar
+                scrollY: -window.scrollY, 
                 windowY: window.scrollY
             }).then(canvas => {
                 canvas.toBlob(function(blob) {
