@@ -85,7 +85,6 @@
                         <tr><td class="lbl w-[30%] font-semibold align-top">Nama</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-nama" class="val w-[65%] font-bold break-words"></td></tr>
                         <tr><td class="lbl w-[30%] font-semibold align-top">TTL</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-ttl" class="val w-[65%] font-bold break-words"></td></tr>
                         <tr><td class="lbl w-[30%] font-semibold align-top">Alamat</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-alamat" class="val w-[65%] font-bold break-words leading-snug"></td></tr>
-                        <!-- Tambahan Baris Total Donor & Jadwal -->
                         <tr><td class="lbl w-[30%] font-semibold align-top mt-2">Total Donor</td><td class="colon w-[5%] font-semibold align-top mt-2">:</td><td id="val-jum" class="val w-[65%] font-bold text-red-600 break-words mt-2"></td></tr>
                         <tr><td class="lbl w-[30%] font-semibold align-top">Kembali</td><td class="colon w-[5%] font-semibold align-top">:</td><td id="val-kembali" class="val w-[65%] font-bold break-words"></td></tr>
                     </table>
@@ -109,7 +108,7 @@
             <div class="bg-white rounded-3xl p-6 shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-slate-100">
                 <div class="text-center mb-5 border-b border-slate-100 pb-3">
                     <h3 class="font-bold text-slate-800 text-lg">🏆 Pencapaian Donor</h3>
-                    <p class="text-[13px] text-slate-500 mt-1">Koleksi medali Pahlawan Kemanusiaan</p>
+                    <p class="text-[13px] text-slate-500 mt-1">Koleksi medali pahlawan kemanusiaan</p>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
@@ -147,6 +146,33 @@
                         <h4 class="text-[11px] font-bold text-slate-800 leading-tight">Pahlawan Kehidupan</h4>
                         <p class="text-[10px] text-slate-500 mt-0.5 font-medium">25x Donor</p>
                         <button onclick="unduhMedali('Pahlawan Kehidupan')" class="btn-unduh w-full mt-3 bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 text-[10px] font-bold py-1.5 rounded-lg transition">⬇ Unduh</button>
+                    </div>
+
+                    <!-- Medali 50 -->
+                    <div id="medal-50" class="medal-card locked p-4 rounded-2xl text-center relative flex flex-col items-center">
+                        <span class="locked-badge absolute top-2 right-2 bg-slate-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Terkunci</span>
+                        <img src="https://cdn-icons-png.flaticon.com/512/5906/5906100.png" class="w-14 h-14 mb-2 medal-img" alt="Penyelamat Sejati">
+                        <h4 class="text-[11px] font-bold text-slate-800 leading-tight">Penyelamat Sejati</h4>
+                        <p class="text-[10px] text-slate-500 mt-0.5 font-medium">50x Donor</p>
+                        <button onclick="unduhMedali('Penyelamat Sejati')" class="btn-unduh w-full mt-3 bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 text-[10px] font-bold py-1.5 rounded-lg transition">⬇ Unduh</button>
+                    </div>
+
+                    <!-- Medali 75 -->
+                    <div id="medal-75" class="medal-card locked p-4 rounded-2xl text-center relative flex flex-col items-center">
+                        <span class="locked-badge absolute top-2 right-2 bg-slate-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Terkunci</span>
+                        <img src="https://cdn-icons-png.flaticon.com/512/3176/3176294.png" class="w-14 h-14 mb-2 medal-img" alt="Inspirator Kehidupan">
+                        <h4 class="text-[11px] font-bold text-slate-800 leading-tight">Inspirator Kehidupan</h4>
+                        <p class="text-[10px] text-slate-500 mt-0.5 font-medium">75x Donor</p>
+                        <button onclick="unduhMedali('Inspirator Kehidupan')" class="btn-unduh w-full mt-3 bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 text-[10px] font-bold py-1.5 rounded-lg transition">⬇ Unduh</button>
+                    </div>
+                    
+                    <!-- Medali 100 (Lebar Penuh / Ultimate) -->
+                    <div id="medal-100" class="col-span-2 medal-card locked p-5 rounded-2xl text-center relative flex flex-col items-center bg-gradient-to-b from-slate-50 to-slate-100">
+                        <span class="locked-badge absolute top-3 right-3 bg-slate-400 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider">Terkunci</span>
+                        <img src="https://cdn-icons-png.flaticon.com/512/2850/2850785.png" class="w-20 h-20 mb-3 medal-img drop-shadow-md" alt="Legenda Kemanusiaan">
+                        <h4 class="text-[14px] font-extrabold text-slate-800 leading-tight uppercase tracking-wide">Legenda Kemanusiaan</h4>
+                        <p class="text-[12px] text-slate-600 mt-1 font-bold">🎉 100x Donor Darah 🎉</p>
+                        <button onclick="unduhMedali('Legenda Kemanusiaan')" class="btn-unduh w-[60%] mt-4 bg-red-600 text-white hover:bg-red-700 shadow-md text-[12px] font-bold py-2 rounded-xl transition">⬇ Unduh Penghargaan</button>
                     </div>
                 </div>
             </div>
@@ -193,7 +219,6 @@
                         let golRaw = (data.gol || '-').toUpperCase();
                         let theme = colors[golRaw] || colors['-'];
                         
-                        // Isi Data Kartu
                         let card = document.getElementById('card-area');
                         card.classList.add('bg-gradient-to-br', ...theme.bg.split(' '));
                         card.style.borderColor = theme.border;
@@ -211,8 +236,7 @@
                         document.getElementById('val-alamat').innerText = data.alamat;
                         document.getElementById('val-kode').innerText = data.kode;
                         
-                        // Menampilkan Jumlah Donor & Jadwal Kembali
-                        let totalDarah = parseInt(data.jumDonor) || 0; // Mengambil dari API
+                        let totalDarah = parseInt(data.jumDonor) || 0;
                         document.getElementById('val-jum').innerText = totalDarah > 0 ? totalDarah + " Kali" : "Belum ada data";
                         document.getElementById('val-kembali').innerText = data.jadwal || "-";
 
@@ -233,14 +257,22 @@
                         document.getElementById('btn-download').classList.add('flex');
                         
                         // ==========================================
-                        // PROSES MEMBUKA KUNCI MEDALI DIGITAL
+                        // PROSES MEMBUKA KUNCI MEDALI DIGITAL (7 TIER)
                         // ==========================================
-                        document.getElementById('trophy-room').classList.remove('hidden'); // Munculkan Lemari
+                        document.getElementById('trophy-room').classList.remove('hidden'); 
                         
                         if(totalDarah >= 1) unlockMedal('medal-1');
                         if(totalDarah >= 5) unlockMedal('medal-5');
                         if(totalDarah >= 10) unlockMedal('medal-10');
                         if(totalDarah >= 25) unlockMedal('medal-25');
+                        if(totalDarah >= 50) unlockMedal('medal-50');
+                        if(totalDarah >= 75) unlockMedal('medal-75');
+                        
+                        // Tier Tertinggi (Ultimate)
+                        if(totalDarah >= 100) {
+                            unlockMedal('medal-100');
+                            document.getElementById('medal-100').classList.add('border-2', 'border-yellow-400', 'bg-yellow-50');
+                        }
                         
                     } else {
                         document.getElementById('loading').innerHTML = `<p class='text-red-500 font-bold text-center mt-5 text-xl'>⚠️ ${data.pesan}</p>`;
@@ -253,7 +285,6 @@
             document.getElementById('loading').innerHTML = `<p class='text-slate-500 font-bold'>Data pendonor tidak ditemukan.</p>`;
         }
 
-        // Fungsi Buka Kunci
         function unlockMedal(medalId) {
             const el = document.getElementById(medalId);
             if(el) {
@@ -262,21 +293,17 @@
             }
         }
 
-        // Fungsi Simulasi Unduh Medali
         function unduhMedali(namaMedali) {
-            // Nanti ini bisa dihubungkan untuk men-download gambar sertifikat / medali khusus
             alert("Sistem akan mengunduh aset medali: " + namaMedali + "!\n(Fitur download gambar medali segera hadir)");
         }
 
-        // FUNGSI DOWNLOAD KARTU (Mengakali Pergeseran Posisi di iOS Safari)
         function downloadCard() {
             const card = document.getElementById('card-area');
             const btn = document.getElementById('btn-download');
             const originalText = btn.innerHTML;
             
             btn.innerHTML = `<div class="spinner border-t-white w-5 h-5"></div> Memproses...`;
-
-            window.scrollTo(0, 0); // Kunci posisi
+            window.scrollTo(0, 0); 
 
             html2canvas(card, { 
                 scale: 3, 
