@@ -369,12 +369,12 @@
             if(el) { el.classList.remove('locked'); el.classList.add('unlocked'); }
         }
 
-        // ==================================================================
+       // ==================================================================
         // FUNGSI SUPER: MEMBUAT SERTIFIKAT MEDALI 9:16 (IG/WA STORY READY)
-        // Efek: Minimalis, Glassmorphism, 3D, Portrait
+        // Efek: Minimalis, Glassmorphism, 3D, Portrait + LOGO PMI
         // ==================================================================
         async function buatGambarSertifikat(imageUrl, namaMedali, pencapaian) {
-            return new Promise((resolve, reject) => {
+            return new Promise(async (resolve, reject) => {
                 const canvas = document.createElement('canvas');
                 // Resolusi Full HD Portrait (9:16)
                 canvas.width = 1080; 
@@ -418,12 +418,12 @@
                 }
 
                 // 3. Efek Glassmorphism (Panel Kaca Utama)
+                // Kita turunkan panel kaca sedikit agar ada ruang untuk logo
                 ctx.shadowColor = 'rgba(0, 0, 0, 0.1)';
                 ctx.shadowBlur = 50;
                 ctx.shadowOffsetX = 0;
                 ctx.shadowOffsetY = 20;
 
-                // Gradasi Transparan ala Kaca
                 const glassGrad = ctx.createLinearGradient(80, 150, 80, 1550);
                 glassGrad.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
                 glassGrad.addColorStop(1, 'rgba(255, 255, 255, 0.4)');
@@ -433,32 +433,56 @@
                 ctx.fill();
 
                 // Garis Pantulan Kaca (Reflection Border)
-                ctx.shadowColor = 'transparent'; // Matikan shadow untuk border
+                ctx.shadowColor = 'transparent'; 
                 ctx.lineWidth = 3;
                 ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
                 ctx.stroke();
 
-                // 4. Logo / Teks Header
-                ctx.fillStyle = '#dc2626'; // red-600
-                ctx.font = '900 50px Arial, sans-serif';
-                ctx.textAlign = 'center';
-                ctx.fillText('PENGHARGAAN PENCAPAIAN', 540, 270);
-                
-                ctx.fillStyle = '#64748b'; // slate-500
-                ctx.font = 'bold 30px Arial, sans-serif';
-                ctx.fillText('PAHLAWAN KEMANUSIAAN', 540, 320);
+                // FUNGSI LOAD IMAGE SEBAGAI PROMISE
+                const loadImage = (src) => {
+                    return new Promise((res, rej) => {
+                        const img = new Image();
+                        img.crossOrigin = "Anonymous";
+                        img.onload = () => res(img);
+                        img.onerror = () => rej(new Error(`Gagal memuat gambar: ${src}`));
+                        // Tambahkan nocache untuk logo agar tidak error CORS
+                        img.src = src.includes('imgur') ? src + "?nocache=" + new Date().getTime() : src;
+                    });
+                };
 
-                // 5. Muat dan Gambar Medali
-                const img = new Image();
-                img.crossOrigin = "Anonymous";
-                img.onload = () => {
+                try {
+                    // Memuat Logo PMI dan Medali secara bersamaan
+                    const [imgLogo, imgMedal] = await Promise.all([
+                        loadImage('https://i.imgur.com/n7ftJCZ.png'),
+                        loadImage(imageUrl)
+                    ]);
+
+                    // 4. Gambarkan Logo PMI di atas
+                    // Logo asli lumayan lebar, kita set lebarnya 400px (disesuaikan tingginya proporsional)
+                    const logoWidth = 350;
+                    const logoHeight = (imgLogo.height / imgLogo.width) * logoWidth;
+                    // Posisikan di tengah atas (Center X: 540)
+                    ctx.drawImage(imgLogo, 540 - (logoWidth / 2), 190, logoWidth, logoHeight);
+
+                    // 5. Teks Header
+                    ctx.fillStyle = '#dc2626'; // red-600
+                    ctx.font = '900 50px Arial, sans-serif';
+                    ctx.textAlign = 'center';
+                    // Posisi Y teks kita dorong ke bawah logo
+                    ctx.fillText('PENGHARGAAN PENCAPAIAN', 540, 360);
+                    
+                    ctx.fillStyle = '#64748b'; // slate-500
+                    ctx.font = 'bold 30px Arial, sans-serif';
+                    ctx.fillText('PAHLAWAN KEMANUSIAAN', 540, 410);
+
+                    // 6. Muat dan Gambar Medali
                     // Efek Cahaya (Glow) di belakang medali
-                    const glow = ctx.createRadialGradient(540, 650, 50, 540, 650, 300);
+                    const glow = ctx.createRadialGradient(540, 720, 50, 540, 720, 300);
                     glow.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
                     glow.addColorStop(1, 'rgba(255, 255, 255, 0)');
                     ctx.fillStyle = glow;
                     ctx.beginPath();
-                    ctx.arc(540, 650, 300, 0, Math.PI * 2);
+                    ctx.arc(540, 720, 300, 0, Math.PI * 2);
                     ctx.fill();
 
                     // Bayangan Medali (3D Drop Shadow Effect)
@@ -466,30 +490,30 @@
                     ctx.shadowBlur = 40;
                     ctx.shadowOffsetY = 25;
 
-                    // Gambar Medalinya
-                    ctx.drawImage(img, 310, 420, 460, 460);
+                    // Gambar Medalinya (Posisinya kita geser turun sedikit)
+                    ctx.drawImage(imgMedal, 310, 490, 460, 460);
 
                     // Matikan bayangan untuk teks
                     ctx.shadowColor = 'transparent';
 
-                    // 6. Nama Pendonor
+                    // 7. Nama Pendonor
                     ctx.fillStyle = '#94a3b8';
                     ctx.font = 'bold 28px Arial, sans-serif';
-                    ctx.fillText('DIBERIKAN DENGAN BANGGA KEPADA:', 540, 1000);
+                    ctx.fillText('DIBERIKAN DENGAN BANGGA KEPADA:', 540, 1050);
 
                     let userName = document.getElementById('val-nama').innerText.toUpperCase();
                     ctx.fillStyle = '#0f172a'; // slate-900
                     ctx.font = '900 70px Arial, sans-serif';
-                    ctx.fillText(userName, 540, 1070);
+                    ctx.fillText(userName, 540, 1120);
 
-                    // 7. Angka Pencapaian
+                    // 8. Angka Pencapaian
                     ctx.fillStyle = '#ef4444'; // red-500
                     ctx.font = '900 60px Arial, sans-serif';
-                    ctx.fillText(`TELAH MENDONOR ${pencapaian} KALI`, 540, 1190);
+                    ctx.fillText(`TELAH MENDONOR ${pencapaian} KALI`, 540, 1230);
 
-                    // 8. Box Gelar Medali
+                    // 9. Box Gelar Medali
                     ctx.fillStyle = '#fef2f2'; // red-50
-                    drawRoundRect(240, 1240, 600, 80, 40);
+                    drawRoundRect(240, 1280, 600, 80, 40);
                     ctx.fill();
                     ctx.lineWidth = 3;
                     ctx.strokeStyle = '#fca5a5'; // red-300
@@ -497,15 +521,15 @@
 
                     ctx.fillStyle = '#dc2626';
                     ctx.font = 'bold 35px Arial, sans-serif';
-                    ctx.fillText(`Peringkat: ${namaMedali}`, 540, 1292);
+                    ctx.fillText(`Peringkat: ${namaMedali}`, 540, 1332);
 
-                    // 9. Pesan Terima Kasih
+                    // 10. Pesan Terima Kasih
                     ctx.fillStyle = '#64748b'; // slate-500
                     ctx.font = 'italic 28px Arial, sans-serif';
-                    ctx.fillText('"Setetes darah Anda, sejuta harapan bagi mereka."', 540, 1420);
+                    ctx.fillText('"Setetes darah Anda, sejuta harapan bagi mereka."', 540, 1460);
 
-                    // 10. Footer (ASIDA & Tahun) di luar Kaca
-                    const currentYear = new Date().getFullYear(); // Ambil tahun otomatis
+                    // 11. Footer (ASIDA & Tahun) di luar Kaca
+                    const currentYear = new Date().getFullYear(); 
                     
                     ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
                     drawRoundRect(80, 1660, 920, 150, 40);
@@ -525,9 +549,11 @@
 
                     // Selesai! Jadikan gambar
                     canvas.toBlob(blob => resolve(blob), 'image/jpeg', 0.95);
-                };
-                img.onerror = () => reject('Gagal memuat aset gambar dari server');
-                img.src = imageUrl;
+
+                } catch (error) {
+                    console.error("Gagal memuat aset:", error);
+                    reject(error);
+                }
             });
         }
 
