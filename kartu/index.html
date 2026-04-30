@@ -36,8 +36,7 @@
         
         .modal-pop { animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes popIn { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
-        .bottom-sheet-up { animation: slideUp 0.4s ease-out forwards; }
-        @keyframes slideUp { 0% { transform: translateY(100%); } 100% { transform: translateY(0); } }
+      
         
         /* Animasi Mengambang untuk Badge di Kartu */
         .float-badge { animation: float 3s ease-in-out infinite; }
@@ -137,7 +136,7 @@
 
     <!-- MODAL LEMARI MEDALI (BOTTOM SHEET) -->
     <div id="trophy-modal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300">
-        <div id="trophy-content" class="bg-white w-full max-w-md rounded-t-[32px] sm:rounded-[32px] p-6 pb-10 shadow-2xl relative max-h-[85vh] overflow-y-auto transform translate-y-full transition-transform duration-300">
+        <div id="trophy-content" class="bg-white w-full max-w-md rounded-t-[32px] sm:rounded-[32px] p-6 pb-10 shadow-2xl relative max-h-[85vh] overflow-y-auto transform translate-y-full transition-transform duration-300 ease-out"><div id="trophy-content" class="bg-white w-full max-w-md rounded-t-[32px] sm:rounded-[32px] p-6 pb-10 shadow-2xl relative max-h-[85vh] overflow-y-auto transform translate-y-full transition-transform duration-300 ease-out">
             
             <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mb-5"></div>
             <button onclick="tutupLemari()" class="absolute top-5 right-5 bg-slate-100 text-slate-500 hover:bg-slate-200 p-2 rounded-full transition"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></button>
@@ -354,14 +353,33 @@
             document.getElementById('action-buttons').classList.remove('hidden'); document.getElementById('action-buttons').classList.add('flex');
         }
 
+// --- MANAJEMEN MODAL LEMARI MEDALI ---
         function bukaLemari() {
-            const m = document.getElementById('trophy-modal'); const c = document.getElementById('trophy-content'); m.classList.remove('hidden');
-            setTimeout(() => { c.classList.add('bottom-sheet-up'); c.classList.remove('translate-y-full'); }, 10);
+            const modal = document.getElementById('trophy-modal');
+            const content = document.getElementById('trophy-content');
+            
+            // Munculkan layar gelap (backdrop) dulu
+            modal.classList.remove('hidden');
+            
+            // Jeda 10 milidetik agar browser sempat memuat elemen sebelum animasi ditarik
+            setTimeout(() => {
+                content.classList.remove('translate-y-full'); // Hapus posisi di bawah layar
+                content.classList.add('translate-y-0');       // Tarik tepat ke tengah/bawah layar
+            }, 10);
         }
 
         function tutupLemari() {
-            const m = document.getElementById('trophy-modal'); const c = document.getElementById('trophy-content');
-            c.classList.remove('bottom-sheet-up'); c.classList.add('translate-y-full'); setTimeout(() => { m.classList.add('hidden'); }, 300);
+            const modal = document.getElementById('trophy-modal');
+            const content = document.getElementById('trophy-content');
+            
+            // Turunkan kembali lemarinya ke luar layar
+            content.classList.remove('translate-y-0');
+            content.classList.add('translate-y-full');
+            
+            // Tunggu 300ms (sesuai durasi transisi) baru sembunyikan total
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
         }
 
         function unlockMedal(medalId) {
