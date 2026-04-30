@@ -7,11 +7,13 @@
     <title>Kartu Donor & Medali Digital - PMI</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Tambahan Library Confetti untuk Animasi Hujan Kertas -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
         :root { color-scheme: light; }
@@ -44,10 +46,40 @@
         .unlocked .locked-badge { display: none; }
         .unlocked { background-color: #ffffff; border: 1px solid #fca5a5; box-shadow: 0 4px 10px rgba(220, 38, 38, 0.1); }
         .unlocked .medal-img { filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15)); transform: scale(1.05); }
+        
+        /* Animasi Modal Pop-up */
+        .modal-pop { animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes popIn { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
     </style>
 </head>
 <body>
 
+    <!-- MODAL ANIMASI UCAPAN SELAMAT -->
+    <div id="welcome-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300">
+        <div id="modal-content" class="bg-white rounded-[32px] p-8 max-w-sm w-[85%] text-center shadow-2xl relative overflow-hidden transform scale-95 opacity-0 transition-all duration-300">
+            <!-- Dekorasi Latar -->
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-red-100 rounded-full blur-2xl opacity-60"></div>
+            <div class="absolute -bottom-10 -left-10 w-32 h-32 bg-yellow-100 rounded-full blur-2xl opacity-60"></div>
+            
+            <div class="relative z-10">
+                <div class="text-6xl mb-3 animate-bounce">🎉</div>
+                <h2 class="text-2xl font-extrabold text-slate-800 mb-2 leading-tight">Terima Kasih,<br><span id="modal-nama" class="text-red-600">Pahlawan</span>!</h2>
+                <p class="text-[13px] text-slate-500 font-semibold mb-4" id="modal-pesan">Kebaikanmu telah memberikan harapan baru bagi sesama.</p>
+                
+                <div class="bg-red-50 rounded-2xl p-4 border border-red-100 mb-6">
+                    <p class="text-[11px] text-slate-500 font-bold uppercase tracking-wider mb-1">Total Donor Darah</p>
+                    <div class="text-5xl font-black text-red-600 drop-shadow-sm"><span id="modal-jum">0</span><span class="text-xl ml-1 text-red-400">x</span></div>
+                </div>
+                
+                <button onclick="bukaKartu()" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg transition duration-300 flex items-center justify-center gap-2">
+                    Buka Kartu & Medali Saya
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOADING SCREEN -->
     <div id="loading">
         <div class="spinner"></div>
         <p class="mt-4 text-slate-500 font-semibold animate-pulse">Menyiapkan Data & Medali...</p>
@@ -120,7 +152,6 @@
                         <p class="text-[10px] text-slate-500 mt-0.5 font-medium">1x Donor</p>
                         <button onclick="unduhMedali('Langkah Awal')" class="btn-unduh w-full mt-3 bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 text-[10px] font-bold py-1.5 rounded-lg transition">⬇ Unduh</button>
                     </div>
-
                     <!-- Medali 5 -->
                     <div id="medal-5" class="medal-card locked p-4 rounded-2xl text-center relative flex flex-col items-center">
                         <span class="locked-badge absolute top-2 right-2 bg-slate-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Terkunci</span>
@@ -129,7 +160,6 @@
                         <p class="text-[10px] text-slate-500 mt-0.5 font-medium">5x Donor</p>
                         <button onclick="unduhMedali('Ksatria Kemanusiaan')" class="btn-unduh w-full mt-3 bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 text-[10px] font-bold py-1.5 rounded-lg transition">⬇ Unduh</button>
                     </div>
-
                     <!-- Medali 10 -->
                     <div id="medal-10" class="medal-card locked p-4 rounded-2xl text-center relative flex flex-col items-center">
                         <span class="locked-badge absolute top-2 right-2 bg-slate-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Terkunci</span>
@@ -138,7 +168,6 @@
                         <p class="text-[10px] text-slate-500 mt-0.5 font-medium">10x Donor</p>
                         <button onclick="unduhMedali('Duta Pakesang')" class="btn-unduh w-full mt-3 bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 text-[10px] font-bold py-1.5 rounded-lg transition">⬇ Unduh</button>
                     </div>
-
                     <!-- Medali 25 -->
                     <div id="medal-25" class="medal-card locked p-4 rounded-2xl text-center relative flex flex-col items-center">
                         <span class="locked-badge absolute top-2 right-2 bg-slate-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Terkunci</span>
@@ -147,7 +176,6 @@
                         <p class="text-[10px] text-slate-500 mt-0.5 font-medium">25x Donor</p>
                         <button onclick="unduhMedali('Pahlawan Kehidupan')" class="btn-unduh w-full mt-3 bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 text-[10px] font-bold py-1.5 rounded-lg transition">⬇ Unduh</button>
                     </div>
-
                     <!-- Medali 50 -->
                     <div id="medal-50" class="medal-card locked p-4 rounded-2xl text-center relative flex flex-col items-center">
                         <span class="locked-badge absolute top-2 right-2 bg-slate-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Terkunci</span>
@@ -156,7 +184,6 @@
                         <p class="text-[10px] text-slate-500 mt-0.5 font-medium">50x Donor</p>
                         <button onclick="unduhMedali('Penyelamat Sejati')" class="btn-unduh w-full mt-3 bg-red-50 text-red-600 hover:bg-red-100 border border-red-200 text-[10px] font-bold py-1.5 rounded-lg transition">⬇ Unduh</button>
                     </div>
-
                     <!-- Medali 75 -->
                     <div id="medal-75" class="medal-card locked p-4 rounded-2xl text-center relative flex flex-col items-center">
                         <span class="locked-badge absolute top-2 right-2 bg-slate-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Terkunci</span>
@@ -251,16 +278,44 @@
                             lineColor: "#0f172a", width: 2.5, height: 40, margin: 0
                         });
 
-                        document.getElementById('loading').style.display = 'none';
-                        card.classList.remove('hidden');
-                        document.getElementById('btn-download').classList.remove('hidden');
-                        document.getElementById('btn-download').classList.add('flex');
+                        // ----------------------------------------------------
+                        // LOGIKA MUNCULNYA MODAL ATAU LANGSUNG KARTU
+                        // ----------------------------------------------------
+                        document.getElementById('loading').style.display = 'none'; // Hilangkan loading
+                        
+                        if (totalDarah > 0) {
+                            // Ambil nama panggilan (kata pertama)
+                            let namaPanggilan = data.nama.split(' ')[0];
+                            document.getElementById('modal-nama').innerText = namaPanggilan;
+                            document.getElementById('modal-jum').innerText = totalDarah;
+                            
+                            // Tampilkan Modal
+                            const modal = document.getElementById('welcome-modal');
+                            const content = document.getElementById('modal-content');
+                            modal.classList.remove('hidden');
+                            
+                            // Efek Pop-in setelah sedikit delay
+                            setTimeout(() => {
+                                content.classList.remove('scale-95', 'opacity-0');
+                                content.classList.add('scale-100', 'opacity-100', 'modal-pop');
+                                
+                                // Ledakan Confetti dari tengah bawah
+                                confetti({
+                                    particleCount: 150,
+                                    spread: 80,
+                                    origin: { y: 0.7 },
+                                    colors: ['#ef4444', '#facc15', '#3b82f6', '#10b981']
+                                });
+                            }, 50);
+
+                        } else {
+                            // Jika belum pernah donor, langsung tampilkan kartu
+                            tampilkanSemuaKartu();
+                        }
                         
                         // ==========================================
                         // PROSES MEMBUKA KUNCI MEDALI DIGITAL (7 TIER)
                         // ==========================================
-                        document.getElementById('trophy-room').classList.remove('hidden'); 
-                        
                         if(totalDarah >= 1) unlockMedal('medal-1');
                         if(totalDarah >= 5) unlockMedal('medal-5');
                         if(totalDarah >= 10) unlockMedal('medal-10');
@@ -268,7 +323,6 @@
                         if(totalDarah >= 50) unlockMedal('medal-50');
                         if(totalDarah >= 75) unlockMedal('medal-75');
                         
-                        // Tier Tertinggi (Ultimate)
                         if(totalDarah >= 100) {
                             unlockMedal('medal-100');
                             document.getElementById('medal-100').classList.add('border-2', 'border-yellow-400', 'bg-yellow-50');
@@ -283,6 +337,30 @@
                 });
         } else {
             document.getElementById('loading').innerHTML = `<p class='text-slate-500 font-bold'>Data pendonor tidak ditemukan.</p>`;
+        }
+
+        // --- FUNGSI BUKA KARTU DARI MODAL ---
+        function bukaKartu() {
+            const modal = document.getElementById('welcome-modal');
+            const content = document.getElementById('modal-content');
+            
+            // Animasi menutup modal (Fade out & shrink)
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            modal.classList.add('opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                tampilkanSemuaKartu(); // Tampilkan kartu setelah modal hilang
+            }, 300); // Waktu transisi 0.3s
+        }
+
+        // --- FUNGSI MENAMPILKAN KARTU & LEMARI ---
+        function tampilkanSemuaKartu() {
+            document.getElementById('card-area').classList.remove('hidden');
+            document.getElementById('btn-download').classList.remove('hidden');
+            document.getElementById('btn-download').classList.add('flex');
+            document.getElementById('trophy-room').classList.remove('hidden'); 
         }
 
         function unlockMedal(medalId) {
