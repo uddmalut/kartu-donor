@@ -370,64 +370,160 @@
         }
 
         // ==================================================================
-        // FUNGSI SUPER: MEMBUAT SERTIFIKAT MEDALI PERSONAL (ANTI COPY-PASTE)
+        // FUNGSI SUPER: MEMBUAT SERTIFIKAT MEDALI 9:16 (IG/WA STORY READY)
+        // Efek: Minimalis, Glassmorphism, 3D, Portrait
         // ==================================================================
         async function buatGambarSertifikat(imageUrl, namaMedali, pencapaian) {
             return new Promise((resolve, reject) => {
                 const canvas = document.createElement('canvas');
-                canvas.width = 1080; canvas.height = 1080; // Resolusi Tinggi untuk IG/WA
+                // Resolusi Full HD Portrait (9:16)
+                canvas.width = 1080; 
+                canvas.height = 1920; 
                 const ctx = canvas.getContext('2d');
 
-                // 1. Background Terang
-                ctx.fillStyle = '#f8fafc';
-                ctx.fillRect(0, 0, 1080, 1080);
+                // 1. Background Gradient (Minimalis Slate)
+                const bgGrad = ctx.createLinearGradient(0, 0, 1080, 1920);
+                bgGrad.addColorStop(0, '#f1f5f9'); // slate-100
+                bgGrad.addColorStop(0.5, '#e2e8f0'); // slate-200
+                bgGrad.addColorStop(1, '#cbd5e1'); // slate-300
+                ctx.fillStyle = bgGrad;
+                ctx.fillRect(0, 0, 1080, 1920);
+
+                // 2. Elemen Dekorasi Latar (Pendar Cahaya Halus)
+                const auraRed = ctx.createRadialGradient(200, 200, 50, 200, 200, 600);
+                auraRed.addColorStop(0, 'rgba(239, 68, 68, 0.15)'); 
+                auraRed.addColorStop(1, 'rgba(239, 68, 68, 0)');
+                ctx.fillStyle = auraRed;
+                ctx.fillRect(0, 0, 1080, 1920);
+
+                const auraYellow = ctx.createRadialGradient(880, 1700, 50, 880, 1700, 600);
+                auraYellow.addColorStop(0, 'rgba(234, 179, 8, 0.15)'); 
+                auraYellow.addColorStop(1, 'rgba(234, 179, 8, 0)');
+                ctx.fillStyle = auraYellow;
+                ctx.fillRect(0, 0, 1080, 1920);
+
+                // Fungsi Bantuan Pembuat Kotak Melengkung (Rounded Rectangle)
+                function drawRoundRect(x, y, w, h, r) {
+                    ctx.beginPath();
+                    ctx.moveTo(x + r, y);
+                    ctx.lineTo(x + w - r, y);
+                    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+                    ctx.lineTo(x + w, y + h - r);
+                    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+                    ctx.lineTo(x + r, y + h);
+                    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+                    ctx.lineTo(x, y + r);
+                    ctx.quadraticCurveTo(x, y, x + r, y);
+                    ctx.closePath();
+                }
+
+                // 3. Efek Glassmorphism (Panel Kaca Utama)
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.1)';
+                ctx.shadowBlur = 50;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 20;
+
+                // Gradasi Transparan ala Kaca
+                const glassGrad = ctx.createLinearGradient(80, 150, 80, 1550);
+                glassGrad.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
+                glassGrad.addColorStop(1, 'rgba(255, 255, 255, 0.4)');
+                ctx.fillStyle = glassGrad;
                 
-                // 2. Bingkai Tipis
-                ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 20;
-                ctx.strokeRect(40, 40, 1000, 1000);
+                drawRoundRect(80, 150, 920, 1400, 60);
+                ctx.fill();
 
-                // 3. Pita Merah di Atas
-                ctx.fillStyle = '#dc2626';
-                ctx.fillRect(40, 40, 1000, 25);
+                // Garis Pantulan Kaca (Reflection Border)
+                ctx.shadowColor = 'transparent'; // Matikan shadow untuk border
+                ctx.lineWidth = 3;
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+                ctx.stroke();
 
-                // 4. Teks Header
-                ctx.fillStyle = '#dc2626';
-                ctx.font = 'bold 45px Arial, sans-serif'; ctx.textAlign = 'center';
-                ctx.fillText('PENGHARGAAN DONOR DARAH', 540, 150);
+                // 4. Logo / Teks Header
+                ctx.fillStyle = '#dc2626'; // red-600
+                ctx.font = '900 50px Arial, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('PENGHARGAAN PENCAPAIAN', 540, 270);
                 
-                ctx.fillStyle = '#64748b';
-                ctx.font = 'bold 28px Arial, sans-serif';
-                ctx.fillText('UDD PMI Provinsi Maluku Utara', 540, 195);
+                ctx.fillStyle = '#64748b'; // slate-500
+                ctx.font = 'bold 30px Arial, sans-serif';
+                ctx.fillText('PAHLAWAN KEMANUSIAAN', 540, 320);
 
-                // 5. Muat dan Gambar Medali di Tengah
+                // 5. Muat dan Gambar Medali
                 const img = new Image();
                 img.crossOrigin = "Anonymous";
                 img.onload = () => {
-                    ctx.drawImage(img, 340, 260, 400, 400);
+                    // Efek Cahaya (Glow) di belakang medali
+                    const glow = ctx.createRadialGradient(540, 650, 50, 540, 650, 300);
+                    glow.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
+                    glow.addColorStop(1, 'rgba(255, 255, 255, 0)');
+                    ctx.fillStyle = glow;
+                    ctx.beginPath();
+                    ctx.arc(540, 650, 300, 0, Math.PI * 2);
+                    ctx.fill();
 
-                    // 6. Nama Pendonor (Besar di Bawah Medali)
+                    // Bayangan Medali (3D Drop Shadow Effect)
+                    ctx.shadowColor = 'rgba(0, 0, 0, 0.25)';
+                    ctx.shadowBlur = 40;
+                    ctx.shadowOffsetY = 25;
+
+                    // Gambar Medalinya
+                    ctx.drawImage(img, 310, 420, 460, 460);
+
+                    // Matikan bayangan untuk teks
+                    ctx.shadowColor = 'transparent';
+
+                    // 6. Nama Pendonor
+                    ctx.fillStyle = '#94a3b8';
+                    ctx.font = 'bold 28px Arial, sans-serif';
+                    ctx.fillText('DIBERIKAN DENGAN BANGGA KEPADA:', 540, 1000);
+
                     let userName = document.getElementById('val-nama').innerText.toUpperCase();
-                    ctx.fillStyle = '#0f172a';
-                    ctx.font = 'bold 65px Arial, sans-serif';
-                    ctx.fillText(userName, 540, 770);
+                    ctx.fillStyle = '#0f172a'; // slate-900
+                    ctx.font = '900 70px Arial, sans-serif';
+                    ctx.fillText(userName, 540, 1070);
 
                     // 7. Angka Pencapaian
+                    ctx.fillStyle = '#ef4444'; // red-500
+                    ctx.font = '900 60px Arial, sans-serif';
+                    ctx.fillText(`TELAH MENDONOR ${pencapaian} KALI`, 540, 1190);
+
+                    // 8. Box Gelar Medali
+                    ctx.fillStyle = '#fef2f2'; // red-50
+                    drawRoundRect(240, 1240, 600, 80, 40);
+                    ctx.fill();
+                    ctx.lineWidth = 3;
+                    ctx.strokeStyle = '#fca5a5'; // red-300
+                    ctx.stroke();
+
                     ctx.fillStyle = '#dc2626';
-                    ctx.font = 'bold 45px Arial, sans-serif';
-                    ctx.fillText(`TELAH MENDONOR ${pencapaian} KALI`, 540, 840);
+                    ctx.font = 'bold 35px Arial, sans-serif';
+                    ctx.fillText(`Peringkat: ${namaMedali}`, 540, 1292);
 
-                    // 8. Gelar Medali
-                    ctx.fillStyle = '#64748b';
-                    ctx.font = 'italic 32px Arial, sans-serif';
-                    ctx.fillText(`Pencapaian: ${namaMedali}`, 540, 910);
+                    // 9. Pesan Terima Kasih
+                    ctx.fillStyle = '#64748b'; // slate-500
+                    ctx.font = 'italic 28px Arial, sans-serif';
+                    ctx.fillText('"Setetes darah Anda, sejuta harapan bagi mereka."', 540, 1420);
 
-                    // 9. Tanggal Cetak
-                    const today = new Date().toLocaleDateString('id-ID', {day: 'numeric', month: 'long', year: 'numeric'});
-                    ctx.fillStyle = '#94a3b8';
-                    ctx.font = '24px Arial, sans-serif';
-                    ctx.fillText(`Diterbitkan pada: ${today}`, 540, 970);
+                    // 10. Footer (ASIDA & Tahun) di luar Kaca
+                    const currentYear = new Date().getFullYear(); // Ambil tahun otomatis
+                    
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                    drawRoundRect(80, 1660, 920, 150, 40);
+                    ctx.fill();
 
-                    // Ubah jadi File Blob
+                    ctx.fillStyle = '#94a3b8'; // slate-400
+                    ctx.font = 'bold 24px Arial, sans-serif';
+                    ctx.fillText('Diterbitkan secara otomatis oleh', 540, 1715);
+                    
+                    ctx.fillStyle = '#dc2626'; // red-600
+                    ctx.font = '900 28px Arial, sans-serif';
+                    ctx.fillText('ASIDA (Asisten Donor Darah)', 540, 1755);
+
+                    ctx.fillStyle = '#64748b'; // slate-500
+                    ctx.font = 'bold 24px Arial, sans-serif';
+                    ctx.fillText(`UDD PMI Provinsi Maluku Utara © ${currentYear}`, 540, 1790);
+
+                    // Selesai! Jadikan gambar
                     canvas.toBlob(blob => resolve(blob), 'image/jpeg', 0.95);
                 };
                 img.onerror = () => reject('Gagal memuat aset gambar dari server');
