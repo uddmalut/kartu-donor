@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light">
-    <title>Kartu Donor & Medali Digital - PMI</title>
+    <title>Kartu Donor & Medali Digital - PMI Maluku Utara</title>
     
+    <!-- Library Eksternal -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -18,18 +18,8 @@
         :root { color-scheme: light; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; padding-bottom: 40px; }
         
-        .card-container {
-            width: 100%; max-width: 400px; border-radius: 28px; position: relative;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); overflow: hidden;
-            border-bottom-style: solid; border-bottom-width: 14px;
-        }
-
-        .geometric-bg {
-            position: absolute; inset: 0; opacity: 0.15; z-index: 0; mix-blend-mode: overlay;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='2'%3E%3Cpath d='M769 229L1037 250.9M927.1 49.1L1051.6 258.1M658.3 225.9L531.8 47.4M121.8 136.4L267.5 130.8M228.1 226.5L395.8 74.2M229 284.8L432.7 573.5M266.7 397.4L330.8 549.6M586.4 306.2L819.7 296M611 352.6L940.6 542.7M713 519.2L1122.9 286.2M900 435L922 662M1066.5 491L1142.2 436'/%3E%3Cpath d='M836 498.8L936.5 658M835.4 611L671 661M632 755.8L799.7 503.5M386 630.8L597.5 765.3M428.8 698.5L347.5 831.3'/%3E%3C/g%3E%3C/svg%3E");
-            background-size: cover; background-position: center;
-        }
-
+        .card-container { width: 100%; max-width: 400px; border-radius: 28px; position: relative; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); overflow: hidden; border-bottom-style: solid; border-bottom-width: 14px; }
+        .geometric-bg { position: absolute; inset: 0; opacity: 0.15; z-index: 0; mix-blend-mode: overlay; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400' viewBox='0 0 800 800'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='2'%3E%3Cpath d='M769 229L1037 250.9M927.1 49.1L1051.6 258.1M658.3 225.9L531.8 47.4M121.8 136.4L267.5 130.8M228.1 226.5L395.8 74.2M229 284.8L432.7 573.5M266.7 397.4L330.8 549.6M586.4 306.2L819.7 296M611 352.6L940.6 542.7M713 519.2L1122.9 286.2M900 435L922 662M1066.5 491L1142.2 436'/%3E%3Cpath d='M836 498.8L936.5 658M835.4 611L671 661M632 755.8L799.7 503.5M386 630.8L597.5 765.3M428.8 698.5L347.5 831.3'/%3E%3C/g%3E%3C/svg%3E"); background-size: cover; background-position: center; }
         .content-layer { position: relative; z-index: 10; padding: 20px; }
         .inner-box { background: rgba(255, 255, 255, 0.95); border-radius: 18px; padding: 16px; margin-bottom: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); }
         
@@ -41,15 +31,14 @@
         .medal-card { transition: all 0.3s ease; }
         .locked .medal-img { filter: grayscale(100%) opacity(30%); }
         .locked { background-color: #f8fafc; border: 1px dashed #cbd5e1; }
-        .locked .btn-bagikan { display: none; }
+        .locked .action-medali { display: none !important; } /* Sembunyikan tombol kalau masih terkunci */
         .unlocked .locked-badge { display: none; }
         .unlocked { background-color: #ffffff; border: 1px solid #fca5a5; box-shadow: 0 4px 10px rgba(220, 38, 38, 0.1); }
         .unlocked .medal-img { filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15)); transform: scale(1.05); }
         
-        /* Animasi Modal */
+        /* Animasi Modal & Bottom Sheet */
         .modal-pop { animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes popIn { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
-        
         .bottom-sheet-up { animation: slideUp 0.4s ease-out forwards; }
         @keyframes slideUp { 0% { transform: translateY(100%); } 100% { transform: translateY(0); } }
     </style>
@@ -140,7 +129,7 @@
                 🏆 Lihat Lemari Medali
             </button>
         </div>
-    </div> <!-- End Card Wrapper -->
+    </div>
 
     <!-- MODAL LEMARI MEDALI (BOTTOM SHEET) -->
     <div id="trophy-modal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/60 backdrop-blur-sm transition-opacity duration-300">
@@ -159,75 +148,119 @@
             </div>
 
             <div class="grid grid-cols-2 gap-4">
-                <!-- Medali 1 -->
+                
+                <!-- MEDALI 1x -->
                 <div id="medal-1" class="medal-card locked p-4 rounded-2xl text-center relative flex flex-col items-center">
                     <span class="locked-badge absolute top-2 right-2 bg-slate-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Terkunci</span>
-                    <img src="https://cdn-icons-png.flaticon.com/512/179/179250.png" class="w-14 h-14 mb-2 medal-img" alt="Langkah Awal">
+                    <!-- Sesuaikan nama filenya misal: assets/medali-1x.png -->
+                    <img src="assets/medali-1x.png" class="w-14 h-14 mb-2 medal-img" alt="Langkah Awal" onerror="this.src='https://cdn-icons-png.flaticon.com/512/179/179250.png'">
                     <h4 class="text-[11px] font-bold text-slate-800 leading-tight">Langkah Awal</h4>
                     <p class="text-[10px] text-slate-500 mt-0.5 font-medium">1x Donor</p>
-                    <button onclick="bagikanMedali(this, 'Langkah Awal', 1)" class="btn-bagikan w-full mt-3 bg-red-600 text-white hover:bg-red-700 text-[10px] font-bold py-1.5 rounded-lg transition flex justify-center items-center gap-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" /></svg> Bagikan
-                    </button>
+                    <div class="action-medali flex gap-2 w-full mt-3">
+                        <button onclick="unduhMedaliTunggal(this, 1)" class="flex-1 bg-slate-100 text-slate-700 hover:bg-slate-200 text-[10px] font-bold py-1.5 rounded-lg transition flex justify-center items-center gap-1 shadow-sm">
+                            ⬇ Simpan
+                        </button>
+                        <button onclick="bagikanMedali(this, 'Langkah Awal', 1)" class="flex-1 bg-red-600 text-white hover:bg-red-700 text-[10px] font-bold py-1.5 rounded-lg transition flex justify-center items-center gap-1 shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" /></svg> Share
+                        </button>
+                    </div>
                 </div>
-                <!-- Medali 5 -->
+
+                <!-- MEDALI 5x -->
                 <div id="medal-5" class="medal-card locked p-4 rounded-2xl text-center relative flex flex-col items-center">
                     <span class="locked-badge absolute top-2 right-2 bg-slate-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Terkunci</span>
-                    <img src="https://cdn-icons-png.flaticon.com/512/179/179251.png" class="w-14 h-14 mb-2 medal-img" alt="Ksatria Kemanusiaan">
+                    <!-- Sesuaikan nama filenya misal: assets/medali-5x.png -->
+                    <img src="assets/medali-5x.png" class="w-14 h-14 mb-2 medal-img" alt="Ksatria Kemanusiaan" onerror="this.src='https://cdn-icons-png.flaticon.com/512/179/179251.png'">
                     <h4 class="text-[11px] font-bold text-slate-800 leading-tight">Ksatria Kemanusiaan</h4>
                     <p class="text-[10px] text-slate-500 mt-0.5 font-medium">5x Donor</p>
-                    <button onclick="bagikanMedali(this, 'Ksatria Kemanusiaan', 5)" class="btn-bagikan w-full mt-3 bg-red-600 text-white hover:bg-red-700 text-[10px] font-bold py-1.5 rounded-lg transition flex justify-center items-center gap-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" /></svg> Bagikan
-                    </button>
+                    <div class="action-medali flex gap-2 w-full mt-3">
+                        <button onclick="unduhMedaliTunggal(this, 5)" class="flex-1 bg-slate-100 text-slate-700 hover:bg-slate-200 text-[10px] font-bold py-1.5 rounded-lg transition flex justify-center items-center gap-1 shadow-sm">
+                            ⬇ Simpan
+                        </button>
+                        <button onclick="bagikanMedali(this, 'Ksatria Kemanusiaan', 5)" class="flex-1 bg-red-600 text-white hover:bg-red-700 text-[10px] font-bold py-1.5 rounded-lg transition flex justify-center items-center gap-1 shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" /></svg> Share
+                        </button>
+                    </div>
                 </div>
-                <!-- Medali 10 -->
+
+                <!-- MEDALI 10x -->
                 <div id="medal-10" class="medal-card locked p-4 rounded-2xl text-center relative flex flex-col items-center">
                     <span class="locked-badge absolute top-2 right-2 bg-slate-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Terkunci</span>
-                    <img src="https://cdn-icons-png.flaticon.com/512/179/179249.png" class="w-14 h-14 mb-2 medal-img" alt="Duta Pakesang">
+                    <img src="assets/medali-10x.png" class="w-14 h-14 mb-2 medal-img" alt="Duta Pakesang" onerror="this.src='https://cdn-icons-png.flaticon.com/512/179/179249.png'">
                     <h4 class="text-[11px] font-bold text-slate-800 leading-tight">Duta Pakesang</h4>
                     <p class="text-[10px] text-slate-500 mt-0.5 font-medium">10x Donor</p>
-                    <button onclick="bagikanMedali(this, 'Duta Pakesang', 10)" class="btn-bagikan w-full mt-3 bg-red-600 text-white hover:bg-red-700 text-[10px] font-bold py-1.5 rounded-lg transition flex justify-center items-center gap-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" /></svg> Bagikan
-                    </button>
+                    <div class="action-medali flex gap-2 w-full mt-3">
+                        <button onclick="unduhMedaliTunggal(this, 10)" class="flex-1 bg-slate-100 text-slate-700 hover:bg-slate-200 text-[10px] font-bold py-1.5 rounded-lg transition flex justify-center items-center gap-1 shadow-sm">
+                            ⬇ Simpan
+                        </button>
+                        <button onclick="bagikanMedali(this, 'Duta Pakesang', 10)" class="flex-1 bg-red-600 text-white hover:bg-red-700 text-[10px] font-bold py-1.5 rounded-lg transition flex justify-center items-center gap-1 shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" /></svg> Share
+                        </button>
+                    </div>
                 </div>
-                <!-- Medali 25 -->
+
+                <!-- MEDALI 25x -->
                 <div id="medal-25" class="medal-card locked p-4 rounded-2xl text-center relative flex flex-col items-center">
                     <span class="locked-badge absolute top-2 right-2 bg-slate-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Terkunci</span>
-                    <img src="https://cdn-icons-png.flaticon.com/512/2904/2904973.png" class="w-14 h-14 mb-2 medal-img" alt="Pahlawan Kehidupan">
+                    <img src="assets/medali-25x.png" class="w-14 h-14 mb-2 medal-img" alt="Pahlawan Kehidupan" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2904/2904973.png'">
                     <h4 class="text-[11px] font-bold text-slate-800 leading-tight">Pahlawan Kehidupan</h4>
                     <p class="text-[10px] text-slate-500 mt-0.5 font-medium">25x Donor</p>
-                    <button onclick="bagikanMedali(this, 'Pahlawan Kehidupan', 25)" class="btn-bagikan w-full mt-3 bg-red-600 text-white hover:bg-red-700 text-[10px] font-bold py-1.5 rounded-lg transition flex justify-center items-center gap-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" /></svg> Bagikan
-                    </button>
+                    <div class="action-medali flex gap-2 w-full mt-3">
+                        <button onclick="unduhMedaliTunggal(this, 25)" class="flex-1 bg-slate-100 text-slate-700 hover:bg-slate-200 text-[10px] font-bold py-1.5 rounded-lg transition flex justify-center items-center gap-1 shadow-sm">
+                            ⬇ Simpan
+                        </button>
+                        <button onclick="bagikanMedali(this, 'Pahlawan Kehidupan', 25)" class="flex-1 bg-red-600 text-white hover:bg-red-700 text-[10px] font-bold py-1.5 rounded-lg transition flex justify-center items-center gap-1 shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" /></svg> Share
+                        </button>
+                    </div>
                 </div>
-                <!-- Medali 50 -->
+
+                <!-- MEDALI 50x -->
                 <div id="medal-50" class="medal-card locked p-4 rounded-2xl text-center relative flex flex-col items-center">
                     <span class="locked-badge absolute top-2 right-2 bg-slate-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Terkunci</span>
-                    <img src="https://cdn-icons-png.flaticon.com/512/5906/5906100.png" class="w-14 h-14 mb-2 medal-img" alt="Penyelamat Sejati">
+                    <img src="assets/medali-50x.png" class="w-14 h-14 mb-2 medal-img" alt="Penyelamat Sejati" onerror="this.src='https://cdn-icons-png.flaticon.com/512/5906/5906100.png'">
                     <h4 class="text-[11px] font-bold text-slate-800 leading-tight">Penyelamat Sejati</h4>
                     <p class="text-[10px] text-slate-500 mt-0.5 font-medium">50x Donor</p>
-                    <button onclick="bagikanMedali(this, 'Penyelamat Sejati', 50)" class="btn-bagikan w-full mt-3 bg-red-600 text-white hover:bg-red-700 text-[10px] font-bold py-1.5 rounded-lg transition flex justify-center items-center gap-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" /></svg> Bagikan
-                    </button>
+                    <div class="action-medali flex gap-2 w-full mt-3">
+                        <button onclick="unduhMedaliTunggal(this, 50)" class="flex-1 bg-slate-100 text-slate-700 hover:bg-slate-200 text-[10px] font-bold py-1.5 rounded-lg transition flex justify-center items-center gap-1 shadow-sm">
+                            ⬇ Simpan
+                        </button>
+                        <button onclick="bagikanMedali(this, 'Penyelamat Sejati', 50)" class="flex-1 bg-red-600 text-white hover:bg-red-700 text-[10px] font-bold py-1.5 rounded-lg transition flex justify-center items-center gap-1 shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" /></svg> Share
+                        </button>
+                    </div>
                 </div>
-                <!-- Medali 75 -->
+
+                <!-- MEDALI 75x -->
                 <div id="medal-75" class="medal-card locked p-4 rounded-2xl text-center relative flex flex-col items-center">
                     <span class="locked-badge absolute top-2 right-2 bg-slate-400 text-white text-[9px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">Terkunci</span>
-                    <img src="https://cdn-icons-png.flaticon.com/512/3176/3176294.png" class="w-14 h-14 mb-2 medal-img" alt="Inspirator Kehidupan">
+                    <img src="assets/medali-75x.png" class="w-14 h-14 mb-2 medal-img" alt="Inspirator Kehidupan" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3176/3176294.png'">
                     <h4 class="text-[11px] font-bold text-slate-800 leading-tight">Inspirator Kehidupan</h4>
                     <p class="text-[10px] text-slate-500 mt-0.5 font-medium">75x Donor</p>
-                    <button onclick="bagikanMedali(this, 'Inspirator Kehidupan', 75)" class="btn-bagikan w-full mt-3 bg-red-600 text-white hover:bg-red-700 text-[10px] font-bold py-1.5 rounded-lg transition flex justify-center items-center gap-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" /></svg> Bagikan
-                    </button>
+                    <div class="action-medali flex gap-2 w-full mt-3">
+                        <button onclick="unduhMedaliTunggal(this, 75)" class="flex-1 bg-slate-100 text-slate-700 hover:bg-slate-200 text-[10px] font-bold py-1.5 rounded-lg transition flex justify-center items-center gap-1 shadow-sm">
+                            ⬇ Simpan
+                        </button>
+                        <button onclick="bagikanMedali(this, 'Inspirator Kehidupan', 75)" class="flex-1 bg-red-600 text-white hover:bg-red-700 text-[10px] font-bold py-1.5 rounded-lg transition flex justify-center items-center gap-1 shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" viewBox="0 0 20 20" fill="currentColor"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" /></svg> Share
+                        </button>
+                    </div>
                 </div>
-                <!-- Medali 100 -->
+
+                <!-- MEDALI 100x (ULTIMATE) -->
                 <div id="medal-100" class="col-span-2 medal-card locked p-5 rounded-2xl text-center relative flex flex-col items-center bg-gradient-to-b from-slate-50 to-slate-100">
                     <span class="locked-badge absolute top-3 right-3 bg-slate-400 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider">Terkunci</span>
-                    <img src="https://cdn-icons-png.flaticon.com/512/2850/2850785.png" class="w-20 h-20 mb-3 medal-img drop-shadow-md" alt="Legenda Kemanusiaan">
+                    <img src="assets/medali-100x.png" class="w-20 h-20 mb-3 medal-img drop-shadow-md" alt="Legenda Kemanusiaan" onerror="this.src='https://cdn-icons-png.flaticon.com/512/2850/2850785.png'">
                     <h4 class="text-[14px] font-extrabold text-slate-800 leading-tight uppercase tracking-wide">Legenda Kemanusiaan</h4>
                     <p class="text-[12px] text-slate-600 mt-1 font-bold">🎉 100x Donor Darah 🎉</p>
-                    <button onclick="bagikanMedali(this, 'Legenda Kemanusiaan', 100)" class="btn-bagikan w-[60%] mt-4 bg-red-600 text-white hover:bg-red-700 shadow-md text-[12px] font-bold py-2 rounded-xl transition flex justify-center items-center gap-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" /></svg> Bagikan ke Sosmed
-                    </button>
+                    <div class="action-medali flex gap-2 w-[70%] mt-4">
+                        <button onclick="unduhMedaliTunggal(this, 100)" class="flex-1 bg-white border border-yellow-400 text-yellow-600 hover:bg-yellow-50 text-[11px] font-bold py-2 rounded-xl transition flex justify-center items-center gap-1 shadow-sm">
+                            ⬇ Simpan
+                        </button>
+                        <button onclick="bagikanMedali(this, 'Legenda Kemanusiaan', 100)" class="flex-[2] bg-yellow-500 text-white hover:bg-yellow-600 text-[11px] font-bold py-2 rounded-xl transition flex justify-center items-center gap-1 shadow-sm">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path d="M15 8a3 3 0 10-2.977-2.63l-4.94 2.47a3 3 0 100 4.319l4.94 2.47a3 3 0 10.895-1.789l-4.94-2.47a3.027 3.027 0 000-.74l4.94-2.47C13.456 7.68 14.19 8 15 8z" /></svg> Share ke Sosmed
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -247,9 +280,7 @@
                 ctx.drawImage(img, 0, 0);
                 document.getElementById('logo-pmi').src = canvas.toDataURL('image/png');
             };
-            img.onerror = function() {
-                document.getElementById('logo-pmi').src = "https://i.imgur.com/n7ftJCZ.png";
-            };
+            img.onerror = function() { document.getElementById('logo-pmi').src = "https://i.imgur.com/n7ftJCZ.png"; };
             img.src = "https://i.imgur.com/n7ftJCZ.png?nocache=" + new Date().getTime();
         }
         muatLogoPMI();
@@ -294,19 +325,12 @@
                         document.getElementById('val-jum').innerText = totalDarah > 0 ? totalDarah + " Kali" : "Belum ada data";
                         document.getElementById('val-kembali').innerText = data.jadwal || "-";
 
-                        new QRious({
-                            element: document.getElementById('qr-canvas'),
-                            value: data.kode,
-                            size: 150, background: 'white', foreground: 'black'
-                        });
-
-                        JsBarcode("#barcode-canvas", data.kode, {
-                            format: "CODE128", displayValue: false, background: "transparent",
-                            lineColor: "#0f172a", width: 2.5, height: 40, margin: 0
-                        });
+                        new QRious({ element: document.getElementById('qr-canvas'), value: data.kode, size: 150, background: 'white', foreground: 'black' });
+                        JsBarcode("#barcode-canvas", data.kode, { format: "CODE128", displayValue: false, background: "transparent", lineColor: "#0f172a", width: 2.5, height: 40, margin: 0 });
 
                         document.getElementById('loading').style.display = 'none'; 
                         
+                        // LOGIKA MODAL POP-UP CONFETTI
                         if (totalDarah > 0) {
                             let namaPanggilan = data.nama.split(' ')[0];
                             document.getElementById('modal-nama').innerText = namaPanggilan;
@@ -325,41 +349,34 @@
                             tampilkanSemuaKartu();
                         }
                         
+                        // LOGIKA UNLOCK MEDALI
                         if(totalDarah >= 1) unlockMedal('medal-1');
                         if(totalDarah >= 5) unlockMedal('medal-5');
                         if(totalDarah >= 10) unlockMedal('medal-10');
                         if(totalDarah >= 25) unlockMedal('medal-25');
                         if(totalDarah >= 50) unlockMedal('medal-50');
                         if(totalDarah >= 75) unlockMedal('medal-75');
-                        
                         if(totalDarah >= 100) {
                             unlockMedal('medal-100');
                             document.getElementById('medal-100').classList.add('border-2', 'border-yellow-400', 'bg-yellow-50');
                         }
-                        
                     } else {
                         document.getElementById('loading').innerHTML = `<p class='text-red-500 font-bold text-center mt-5 text-xl'>⚠️ ${data.pesan}</p>`;
                     }
                 })
-                .catch(err => {
-                    document.getElementById('loading').innerHTML = `<p class='text-red-500 font-bold'>Gagal terhubung! Cek URL GAS Anda.</p>`;
-                });
+                .catch(err => { document.getElementById('loading').innerHTML = `<p class='text-red-500 font-bold'>Gagal terhubung! Cek URL GAS Anda.</p>`; });
         } else {
             document.getElementById('loading').innerHTML = `<p class='text-slate-500 font-bold'>Data pendonor tidak ditemukan.</p>`;
         }
 
+        // --- FUNGSI UI MODAL & KARTU ---
         function bukaKartu() {
             const modal = document.getElementById('welcome-modal');
             const content = document.getElementById('welcome-content');
-            
             content.classList.remove('scale-100', 'opacity-100');
             content.classList.add('scale-95', 'opacity-0');
             modal.classList.add('opacity-0');
-            
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                tampilkanSemuaKartu(); 
-            }, 300);
+            setTimeout(() => { modal.classList.add('hidden'); tampilkanSemuaKartu(); }, 300);
         }
 
         function tampilkanSemuaKartu() {
@@ -372,72 +389,79 @@
             const modal = document.getElementById('trophy-modal');
             const content = document.getElementById('trophy-content');
             modal.classList.remove('hidden');
-            
-            setTimeout(() => {
-                content.classList.add('bottom-sheet-up');
-                content.classList.remove('translate-y-full');
-            }, 10);
+            setTimeout(() => { content.classList.add('bottom-sheet-up'); content.classList.remove('translate-y-full'); }, 10);
         }
 
         function tutupLemari() {
             const modal = document.getElementById('trophy-modal');
             const content = document.getElementById('trophy-content');
-            
             content.classList.remove('bottom-sheet-up');
             content.classList.add('translate-y-full');
-            
-            setTimeout(() => {
-                modal.classList.add('hidden');
-            }, 300);
+            setTimeout(() => { modal.classList.add('hidden'); }, 300);
         }
 
         function unlockMedal(medalId) {
             const el = document.getElementById(medalId);
-            if(el) {
-                el.classList.remove('locked');
-                el.classList.add('unlocked');
-            }
+            if(el) { el.classList.remove('locked'); el.classList.add('unlocked'); }
         }
 
-        // --- FUNGSI SHARE DENGAN GAMBAR (UPDATE TERBARU) ---
+        // --- FUNGSI SHARE DENGAN GAMBAR ---
         async function bagikanMedali(btnElement, namaMedali, pencapaian) {
-            // 1. Berikan respon visual tombol "loading"
             const originalHTML = btnElement.innerHTML;
             btnElement.innerHTML = `<div class="spinner border-t-white w-3 h-3 mr-1"></div> Tunggu...`;
-            
             const shareTitle = 'Pencapaian Donor Darah PMI';
             const shareText = `Alhamdulillah! Saya berhasil meraih medali "${namaMedali}" karena telah berdonor darah sebanyak ${pencapaian} kali di UDD PMI Provinsi Maluku Utara. Yuk ikut donor darah! 🩸 Pahlawan Kemanusiaan`;
             
             try {
-                // 2. Ambil URL gambar medali dari elemen di atasnya
                 const cardContainer = btnElement.closest('.medal-card');
                 const imageUrl = cardContainer.querySelector('img').src;
-                
-                // 3. Download gambar tersebut secara diam-diam dan ubah menjadi bentuk File Blob
                 const response = await fetch(imageUrl);
                 const blob = await response.blob();
                 const fileToShare = new File([blob], `Medali_PMI_${pencapaian}x.png`, { type: blob.type });
 
-                // 4. Periksa apakah sistem/HP mendukung pengiriman gambar (Files)
                 if (navigator.canShare && navigator.canShare({ files: [fileToShare] })) {
-                    // Berhasil! Kirim teks beserta gambarnya
-                    await navigator.share({
-                        title: shareTitle,
-                        text: shareText,
-                        files: [fileToShare] 
-                    });
+                    await navigator.share({ title: shareTitle, text: shareText, files: [fileToShare] });
                 } else {
-                    // Jika terpaksa HP tidak dukung gambar, kirim teks saja
                     await navigator.share({ title: shareTitle, text: shareText });
                 }
             } catch (error) {
                 console.error('Batal atau error membagikan:', error);
-                // Fallback terakhir jika terjadi error (misal saat buka di laptop lama)
-                if (navigator.share) {
-                    navigator.share({ title: shareTitle, text: shareText }).catch(e => console.log(e));
-                }
-            } finally {
-                // 5. Kembalikan tombol seperti semula
+                if (navigator.share) { navigator.share({ title: shareTitle, text: shareText }).catch(e => console.log(e)); }
+            } finally { btnElement.innerHTML = originalHTML; }
+        }
+
+        // --- FUNGSI SIMPAN MEDALI KE GALERI HP ---
+        async function unduhMedaliTunggal(btnElement, pencapaian) {
+            const originalHTML = btnElement.innerHTML;
+            btnElement.innerHTML = `<div class="spinner border-t-slate-500 w-3 h-3"></div>`;
+            
+            try {
+                const cardContainer = btnElement.closest('.medal-card');
+                const imageUrl = cardContainer.querySelector('img').src;
+                
+                const response = await fetch(imageUrl);
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                
+                const link = document.createElement('a');
+                link.download = `Medali_PMI_${pencapaian}x.png`;
+                link.href = url;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+                
+                btnElement.innerHTML = `✅ Tersimpan!`;
+                btnElement.classList.replace('bg-slate-100', 'bg-green-100');
+                btnElement.classList.replace('text-slate-700', 'text-green-700');
+                setTimeout(() => { 
+                    btnElement.innerHTML = originalHTML; 
+                    btnElement.classList.replace('bg-green-100', 'bg-slate-100');
+                    btnElement.classList.replace('text-green-700', 'text-slate-700');
+                }, 2000);
+            } catch (error) {
+                console.error('Error saat menyimpan medali:', error);
+                alert("Maaf, gagal menyimpan medali. Pastikan gambar sudah tersedia.");
                 btnElement.innerHTML = originalHTML;
             }
         }
@@ -451,29 +475,14 @@
             actionButtons.innerHTML = `<div class="w-full flex justify-center bg-slate-800 text-white font-bold py-3.5 px-6 rounded-full opacity-70"><div class="spinner border-t-white w-5 h-5 mr-2"></div> Memproses...</div>`;
             window.scrollTo(0, 0); 
 
-            html2canvas(card, { 
-                scale: 3, 
-                backgroundColor: null, 
-                useCORS: true, 
-                allowTaint: false,
-                scrollY: -window.scrollY, 
-                windowY: window.scrollY
+            html2canvas(card, { scale: 3, backgroundColor: null, useCORS: true, allowTaint: false, scrollY: -window.scrollY, windowY: window.scrollY
             }).then(canvas => {
                 canvas.toBlob(function(blob) {
                     const namaFile = `Kartu_Donor_PMI_${document.getElementById('val-nama').innerText.replace(/\s+/g, '_')}.jpg`;
-                    
                     const url = window.URL.createObjectURL(blob);
-                    let link = document.createElement('a');
-                    link.download = namaFile;
-                    link.href = url;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    window.URL.revokeObjectURL(url);
-                    
+                    let link = document.createElement('a'); link.download = namaFile; link.href = url; document.body.appendChild(link); link.click(); document.body.removeChild(link); window.URL.revokeObjectURL(url);
                     actionButtons.innerHTML = `<div class="w-full flex justify-center bg-green-600 text-white font-bold py-3.5 px-6 rounded-full shadow-lg gap-2">✅ Berhasil Diunduh!</div>`;
                     setTimeout(() => { actionButtons.innerHTML = originalHTML; }, 3000);
-                    
                 }, 'image/jpeg', 0.95);
             });
         }
